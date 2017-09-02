@@ -2,18 +2,34 @@
   "name": "redux-token-auth",
   "version": "0.1.0",
   "description": "Redux actions and reducers to integrate with Devise Token Auth",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kylecorbelli/redux-token-auth.git"
   },
   "keywords": [
     "react",
     "redux",
     "auth",
+    "authentication",
     "token",
     "devise",
     "oauth"
   ],
   "author": "Kyle Corbelli",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^20.0.8",
+    "jest": "^20.0.4",
+    "typescript": "^2.5.2"
+  },
+  "dependencies": {
+    "@types/axios": "^0.14.0",
+    "axios": "^0.16.2",
+    "redux": "^3.7.2"
+  }
 }
