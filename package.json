@@ -15,5 +15,8 @@
     "oauth"
   ],
   "author": "Kyle Corbelli",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^2.5.2"
+  }
 }
