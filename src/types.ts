@@ -163,3 +163,5 @@ export interface ActionsExport {
   readonly signInUser: ReduxAsyncAction
   readonly signOutUser: ReduxAsyncAction
 }
+
+export type ActionsGeneratorExport = (authUrl: string) => ActionsExport

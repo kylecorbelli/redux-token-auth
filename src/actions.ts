@@ -105,7 +105,7 @@ export const signOutRequestFailed = (): SignOutRequestFailedAction => ({
 // Async Redux Thunk actions:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const theActionsExportThatShouldBeRenamed = (authUrl: string): ActionsExport => {
+const generateAuthActions = (authUrl: string): ActionsExport => {
   const registerUser = (
     userRegistrationDetails: UserRegistrationDetails,
   ) => async function (dispatch: Dispatch<{}>): Promise<void> {
@@ -221,4 +221,4 @@ const theActionsExportThatShouldBeRenamed = (authUrl: string): ActionsExport => 
   }
 }
 
-export default theActionsExportThatShouldBeRenamed
+export default generateAuthActions

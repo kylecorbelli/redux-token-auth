@@ -1,6 +1,6 @@
 import { Reducer } from 'redux'
-import { ActionsExport } from './src/types'
+import { ActionsGeneratorExport } from './src/types'
 
 export const reduxTokenAuthReducer: Reducer<{}>
 
-export const theActionsExportThatShouldBeRenamed: ActionsExport
+export const generateAuthActions: ActionsGeneratorExport

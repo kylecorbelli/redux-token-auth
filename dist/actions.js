@@ -89,7 +89,7 @@ exports.signOutRequestFailed = function () { return ({
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Async Redux Thunk actions:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-var theActionsExportThatShouldBeRenamed = function (authUrl) {
+var generateAuthActions = function (authUrl) {
     var registerUser = function (userRegistrationDetails) { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
             var firstName, email, password, passwordConfirmation, response, userAttributes, error_1;
@@ -238,5 +238,5 @@ var theActionsExportThatShouldBeRenamed = function (authUrl) {
         signOutUser: signOutUser,
     };
 };
-exports.default = theActionsExportThatShouldBeRenamed;
+exports.default = generateAuthActions;
 //# sourceMappingURL=actions.js.map

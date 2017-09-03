@@ -1,8 +1,8 @@
-import theActionsExportThatShouldBeRenamed from './actions'
+import generateAuthActions from './actions'
 import reduxTokenAuthReducer from './reducers'
 
 export {
-  theActionsExportThatShouldBeRenamed,
+  generateAuthActions,
   reduxTokenAuthReducer,
 }
 
