@@ -1,4 +1,4 @@
-// Maybe make this the index.ts of a types directory so you can split things up
+import { Dispatch } from 'redux'
 
 // This one in particular will be a little tough because we don't know what the package user's "User" model looks like:
 export interface UserAttributes {}
@@ -154,3 +154,12 @@ export type ReduxAction = RegistrationRequestSentAction
   | SignOutRequestSentAction
   | SignOutRequestSucceededAction
   | SignOutRequestFailedAction
+
+export type ReduxAsyncAction = (input: any) => (dispatch: Dispatch<{}>) => Promise<void>
+
+export interface ActionsExport {
+  readonly registerUser: ReduxAsyncAction
+  readonly verifyToken: ReduxAsyncAction
+  readonly signInUser: ReduxAsyncAction
+  readonly signOutUser: ReduxAsyncAction
+}

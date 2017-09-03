@@ -1,5 +1,4 @@
 import axios from 'axios'
-// import { authUrl } from '../../constants' // this has to be passed in by the package user
 import { Dispatch } from 'redux'
 import {
   AuthResponse,
@@ -8,6 +7,7 @@ import {
   UserRegistrationDetails,
   UserSignInCredentials,
   UserSignOutCredentials,
+  ActionsExport,
   REGISTRATION_REQUEST_SENT,
   REGISTRATION_REQUEST_SUCCEEDED,
   REGISTRATION_REQUEST_FAILED,
@@ -105,8 +105,7 @@ export const signOutRequestFailed = (): SignOutRequestFailedAction => ({
 // Async Redux Thunk actions:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Maybe type this even:
-const theActionsExportThatShouldBeRenamed = (authUrl: string) => {
+const theActionsExportThatShouldBeRenamed = (authUrl: string): ActionsExport => {
   const registerUser = (
     userRegistrationDetails: UserRegistrationDetails,
   ) => async function (dispatch: Dispatch<{}>): Promise<void> {
