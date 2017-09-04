@@ -1,5 +1,8 @@
 import axios from 'axios'
-import { Dispatch } from 'redux'
+import {
+  Dispatch,
+  Store,
+} from 'redux'
 import {
   AuthResponse,
   VerificationParams,
@@ -118,7 +121,7 @@ export const signOutRequestFailed = (): SignOutRequestFailedAction => ({
 //   },
 // }
 
-// extract this service somewhere:
+// extract this service somewhere and unit test it:
 const invertHash = (hash: { [key: string]: any }) => {
   const newHash = {}
   for (let key in hash) {
@@ -126,6 +129,19 @@ const invertHash = (hash: { [key: string]: any }) => {
     newHash[val] = key
   }
   return newHash
+}
+
+// extract this service somewhere and unit test it:
+const getUserAttributesFromResponse = (userAttributes: any, response: any) => {
+  const invertedUserAttributes = invertHash(userAttributes)
+  const userAttributesBackendKeys = Object.keys(invertedUserAttributes)
+  const userAttributesToReturn = {}
+  Object.keys(response.data.data).forEach((key: string) => {
+    if (userAttributesBackendKeys.indexOf(key) !== -1) {
+      userAttributesToReturn[invertedUserAttributes[key]] = response.data.data[key]
+    }
+  })
+  return userAttributesToReturn
 }
 
 const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
@@ -162,20 +178,7 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
       setAuthHeaders(response.headers)
       // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
       persistAuthHeadersInLocalStorage(response.headers)
-      // Gonna need to refer to the passed-in User model configuration from the package user
-      // const userAttributes: UserAttributes = {
-      //   firstName,
-      // }
-      const invertedUserAttributes = invertHash(userAttributes)
-      const userAttributesBackendKeys = Object.keys(invertedUserAttributes)
-      const userAttributesToSave = {}
-      Object.keys(response.data.data).forEach((key: string) => {
-        if (userAttributesBackendKeys.indexOf(key) !== -1) {
-          userAttributesToSave[invertedUserAttributes[key]] = response.data.data[key]
-        }
-      })
-      console.log('userAttributesToSave')
-      console.log(userAttributesToSave)
+      const userAttributesToSave = getUserAttributesFromResponse(userAttributes, response)
       dispatch(registrationRequestSucceeded(userAttributesToSave)) // <- need to make this reducer more flexible
     } catch (error) {
       dispatch(registrationRequestFailed())
@@ -193,14 +196,11 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
         url: `${authUrl}/validate_token`,
         params: verificationParams,
       })
-      const { name } = response.data.data
       setAuthHeaders(response.headers)
+      // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
       persistAuthHeadersInLocalStorage(response.headers)
-      // Gonna need to refer to the passed-in User model configuration from the package user
-      const userAttributes: UserAttributes = {
-        firstName: name,
-      }
-      dispatch(verifyTokenRequestSucceeded(userAttributes))
+      const userAttributesToSave = getUserAttributesFromResponse(userAttributes, response)
+      dispatch(verifyTokenRequestSucceeded(userAttributesToSave))
     } catch (error) {
       dispatch(verifyTokenRequestFailed())
     }
@@ -224,13 +224,10 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
         },
       })
       setAuthHeaders(response.headers)
+      // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
       persistAuthHeadersInLocalStorage(response.headers)
-      // Gonna need to refer to the passed-in User model configuration from the package user
-      const { name } = response.data.data
-      const userAttributes: UserAttributes = {
-        firstName: name,
-      }
-      dispatch(signInRequestSucceeded(userAttributes))
+      const userAttributesToSave = getUserAttributesFromResponse(userAttributes, response)
+      dispatch(signInRequestSucceeded(userAttributesToSave))
     } catch (error) {
       dispatch(signInRequestFailed())
       throw error
@@ -248,6 +245,7 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
         data: userSignOutCredentials,
       })
       deleteAuthHeaders()
+      // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
       deleteAuthHeadersFromLocalStorage()
       dispatch(signOutRequestSucceeded())
     } catch (error) {
@@ -256,11 +254,24 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
     }
   }
 
+  const verifyCredentials = (store: Store<{}>): void => {
+    // Gotta check what the platform is:
+    if (localStorage.getItem('access-token')) {
+      const verificationParams: VerificationParams = {
+        'access-token': localStorage.getItem('access-token') as string,
+        client: localStorage.getItem('client') as string,
+        uid: localStorage.getItem('uid') as string,
+      }
+      store.dispatch<any>(verifyToken(verificationParams))
+    }
+  }
+
   return {
     registerUser,
     verifyToken,
     signInUser,
     signOutUser,
+    verifyCredentials,
   }
 }
 

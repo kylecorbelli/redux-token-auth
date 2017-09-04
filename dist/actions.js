@@ -101,7 +101,7 @@ exports.signOutRequestFailed = function () { return ({
 //     firstName: 'name'
 //   },
 // }
-// extract this service somewhere:
+// extract this service somewhere and unit test it:
 var invertHash = function (hash) {
     var newHash = {};
     for (var key in hash) {
@@ -110,11 +110,23 @@ var invertHash = function (hash) {
     }
     return newHash;
 };
+// extract this service somewhere and unit test it:
+var getUserAttributesFromResponse = function (userAttributes, response) {
+    var invertedUserAttributes = invertHash(userAttributes);
+    var userAttributesBackendKeys = Object.keys(invertedUserAttributes);
+    var userAttributesToReturn = {};
+    Object.keys(response.data.data).forEach(function (key) {
+        if (userAttributesBackendKeys.indexOf(key) !== -1) {
+            userAttributesToReturn[invertedUserAttributes[key]] = response.data.data[key];
+        }
+    });
+    return userAttributesToReturn;
+};
 var generateAuthActions = function (config) {
     var authUrl = config.authUrl, userAttributes = config.userAttributes, userRegistrationAttributes = config.userRegistrationAttributes;
     var registerUser = function (userRegistrationDetails) { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
-            var email, password, passwordConfirmation, data, response_1, invertedUserAttributes_1, userAttributesBackendKeys_1, userAttributesToSave_1, error_1;
+            var email, password, passwordConfirmation, data, response, userAttributesToSave, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -138,21 +150,12 @@ var generateAuthActions = function (config) {
                                 data: data,
                             })];
                     case 2:
-                        response_1 = _a.sent();
-                        auth_1.setAuthHeaders(response_1.headers);
+                        response = _a.sent();
+                        auth_1.setAuthHeaders(response.headers);
                         // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
-                        auth_1.persistAuthHeadersInLocalStorage(response_1.headers);
-                        invertedUserAttributes_1 = invertHash(userAttributes);
-                        userAttributesBackendKeys_1 = Object.keys(invertedUserAttributes_1);
-                        userAttributesToSave_1 = {};
-                        Object.keys(response_1.data.data).forEach(function (key) {
-                            if (userAttributesBackendKeys_1.indexOf(key) !== -1) {
-                                userAttributesToSave_1[invertedUserAttributes_1[key]] = response_1.data.data[key];
-                            }
-                        });
-                        console.log('userAttributesToSave');
-                        console.log(userAttributesToSave_1);
-                        dispatch(exports.registrationRequestSucceeded(userAttributesToSave_1)); // <- need to make this reducer more flexible
+                        auth_1.persistAuthHeadersInLocalStorage(response.headers);
+                        userAttributesToSave = getUserAttributesFromResponse(userAttributes, response);
+                        dispatch(exports.registrationRequestSucceeded(userAttributesToSave)); // <- need to make this reducer more flexible
                         return [3 /*break*/, 4];
                     case 3:
                         error_1 = _a.sent();
@@ -165,7 +168,7 @@ var generateAuthActions = function (config) {
     }; };
     var verifyToken = function (verificationParams) { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
-            var response, name_1, userAttributes_1, error_2;
+            var response, userAttributesToSave, error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -180,13 +183,11 @@ var generateAuthActions = function (config) {
                             })];
                     case 2:
                         response = _a.sent();
-                        name_1 = response.data.data.name;
                         auth_1.setAuthHeaders(response.headers);
+                        // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
                         auth_1.persistAuthHeadersInLocalStorage(response.headers);
-                        userAttributes_1 = {
-                            firstName: name_1,
-                        };
-                        dispatch(exports.verifyTokenRequestSucceeded(userAttributes_1));
+                        userAttributesToSave = getUserAttributesFromResponse(userAttributes, response);
+                        dispatch(exports.verifyTokenRequestSucceeded(userAttributesToSave));
                         return [3 /*break*/, 4];
                     case 3:
                         error_2 = _a.sent();
@@ -199,7 +200,7 @@ var generateAuthActions = function (config) {
     }; };
     var signInUser = function (userSignInCredentials) { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
-            var email, password, response, name_2, userAttributes_2, error_3;
+            var email, password, response, userAttributesToSave, error_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -219,12 +220,10 @@ var generateAuthActions = function (config) {
                     case 2:
                         response = _a.sent();
                         auth_1.setAuthHeaders(response.headers);
+                        // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
                         auth_1.persistAuthHeadersInLocalStorage(response.headers);
-                        name_2 = response.data.data.name;
-                        userAttributes_2 = {
-                            firstName: name_2,
-                        };
-                        dispatch(exports.signInRequestSucceeded(userAttributes_2));
+                        userAttributesToSave = getUserAttributesFromResponse(userAttributes, response);
+                        dispatch(exports.signInRequestSucceeded(userAttributesToSave));
                         return [3 /*break*/, 4];
                     case 3:
                         error_3 = _a.sent();
@@ -253,6 +252,7 @@ var generateAuthActions = function (config) {
                     case 2:
                         _a.sent();
                         auth_1.deleteAuthHeaders();
+                        // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
                         auth_1.deleteAuthHeadersFromLocalStorage();
                         dispatch(exports.signOutRequestSucceeded());
                         return [3 /*break*/, 4];
@@ -265,11 +265,23 @@ var generateAuthActions = function (config) {
             });
         });
     }; };
+    var verifyCredentials = function (store) {
+        // Gotta check what the platform is:
+        if (localStorage.getItem('access-token')) {
+            var verificationParams = {
+                'access-token': localStorage.getItem('access-token'),
+                client: localStorage.getItem('client'),
+                uid: localStorage.getItem('uid'),
+            };
+            store.dispatch(verifyToken(verificationParams));
+        }
+    };
     return {
         registerUser: registerUser,
         verifyToken: verifyToken,
         signInUser: signInUser,
         signOutUser: signOutUser,
+        verifyCredentials: verifyCredentials,
     };
 };
 exports.default = generateAuthActions;

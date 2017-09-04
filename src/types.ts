@@ -1,4 +1,7 @@
-import { Dispatch } from 'redux'
+import {
+  Dispatch,
+  Store,
+} from 'redux'
 
 // This one in particular will be a little tough because we don't know what the package user's "User" model looks like:
 export interface UserAttributes {}
@@ -160,11 +163,14 @@ export type ReduxAction = RegistrationRequestSentAction
 
 export type ReduxAsyncAction = (input: any) => (dispatch: Dispatch<{}>) => Promise<void>
 
+export type VerifyCredentialsFunction = (store: Store<{}>) => void
+
 export interface ActionsExport {
   readonly registerUser: ReduxAsyncAction
   readonly verifyToken: ReduxAsyncAction
   readonly signInUser: ReduxAsyncAction
   readonly signOutUser: ReduxAsyncAction
+  readonly verifyCredentials: VerifyCredentialsFunction
 }
 
 export type ActionsGeneratorExport = (config: { [key: string]: any }) => ActionsExport
