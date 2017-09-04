@@ -105,35 +105,78 @@ export const signOutRequestFailed = (): SignOutRequestFailedAction => ({
 // Async Redux Thunk actions:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const generateAuthActions = (authUrl: string): ActionsExport => {
+// what is the second argument here? it needs to contain configs for (1) userRegistrationDetails, (2) userAttributes, (3) maybe even the authUrl... just make it a simple one-argument function
+// we'll also want the userAttributes to pertain to the end-user's initial state and heaven forbid reducers
+// actually, userSignInCredentials, userSignOutCredentials, and verificationParams are always the same as per devise token auth
+// const config = {
+//   authUrl: 'http://url.com',
+//   userAttributes: {
+//     firstName: 'name' // <- key is how the frontend knows it, value is how the backend knows it
+//   },
+//   userRegistrationAttributes: { <- this is for keys/vals IN ADDITION TO email, password and passwordConfirmation
+//     firstName: 'name'
+//   },
+// }
+
+// extract this service somewhere:
+const invertHash = (hash: { [key: string]: any }) => {
+  const newHash = {}
+  for (let key in hash) {
+    const val = hash[key]
+    newHash[val] = key
+  }
+  return newHash
+}
+
+const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
+  const {
+    authUrl,
+    userAttributes,
+    userRegistrationAttributes,
+  } = config
+
   const registerUser = (
     userRegistrationDetails: UserRegistrationDetails,
   ) => async function (dispatch: Dispatch<{}>): Promise<void> {
     dispatch(registrationRequestSent())
     const {
-      firstName,
       email,
       password,
       passwordConfirmation,
     } = userRegistrationDetails
+    const data = {
+      email,
+      password,
+      password_confirmation: passwordConfirmation,
+    }
+    Object.keys(userRegistrationAttributes).forEach((key: string) => {
+      const backendKey = userRegistrationAttributes[key]
+      data[backendKey] = userRegistrationDetails[key]
+    })
     try {
       const response: AuthResponse = await axios({
         method: 'POST',
         url: authUrl,
-        data: {
-          email,
-          name: firstName, // even this is tricky because it requires the user's devise configuration to allow the "name" attribute
-          password,
-          password_confirmation: passwordConfirmation,
-        },
+        data,
       })
       setAuthHeaders(response.headers)
+      // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
       persistAuthHeadersInLocalStorage(response.headers)
       // Gonna need to refer to the passed-in User model configuration from the package user
-      const userAttributes: UserAttributes = {
-        firstName,
-      }
-      dispatch(registrationRequestSucceeded(userAttributes))
+      // const userAttributes: UserAttributes = {
+      //   firstName,
+      // }
+      const invertedUserAttributes = invertHash(userAttributes)
+      const userAttributesBackendKeys = Object.keys(invertedUserAttributes)
+      const userAttributesToSave = {}
+      Object.keys(response.data.data).forEach((key: string) => {
+        if (userAttributesBackendKeys.indexOf(key) !== -1) {
+          userAttributesToSave[invertedUserAttributes[key]] = response.data.data[key]
+        }
+      })
+      console.log('userAttributesToSave')
+      console.log(userAttributesToSave)
+      dispatch(registrationRequestSucceeded(userAttributesToSave)) // <- need to make this reducer more flexible
     } catch (error) {
       dispatch(registrationRequestFailed())
       throw error

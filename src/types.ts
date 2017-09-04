@@ -23,6 +23,9 @@ export interface AuthHeaders {
 
 export interface AuthResponse {
   readonly headers: AuthHeaders
+  readonly data: {
+    readonly data: { [key: string]: any }
+  }
 }
 
 export interface VerificationParams {
@@ -68,10 +71,10 @@ export type SIGNOUT_REQUEST_FAILED = 'redux-token-auth/SIGNOUT_REQUEST_FAILED'
 export const SIGNOUT_REQUEST_FAILED: SIGNOUT_REQUEST_FAILED = 'redux-token-auth/SIGNOUT_REQUEST_FAILED'
 
 export interface UserRegistrationDetails {
-  readonly firstName: string
   readonly email: string
   readonly password: string
   readonly passwordConfirmation: string
+  readonly [key: string]: any
 }
 
 export interface UserSignInCredentials {
@@ -164,4 +167,4 @@ export interface ActionsExport {
   readonly signOutUser: ReduxAsyncAction
 }
 
-export type ActionsGeneratorExport = (authUrl: string) => ActionsExport
+export type ActionsGeneratorExport = (config: { [key: string]: any }) => ActionsExport
