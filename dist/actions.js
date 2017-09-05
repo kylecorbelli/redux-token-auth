@@ -89,37 +89,73 @@ exports.signOutRequestFailed = function () { return ({
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Async Redux Thunk actions:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Maybe type this even:
-var theActionsExportThatShouldBeRenamed = function (authUrl) {
+// what is the second argument here? it needs to contain configs for (1) userRegistrationDetails, (2) userAttributes, (3) maybe even the authUrl... just make it a simple one-argument function
+// we'll also want the userAttributes to pertain to the end-user's initial state and heaven forbid reducers
+// actually, userSignInCredentials, userSignOutCredentials, and verificationParams are always the same as per devise token auth
+// const config = {
+//   authUrl: 'http://url.com',
+//   userAttributes: {
+//     firstName: 'name' // <- key is how the frontend knows it, value is how the backend knows it
+//   },
+//   userRegistrationAttributes: { <- this is for keys/vals IN ADDITION TO email, password and passwordConfirmation
+//     firstName: 'name'
+//   },
+// }
+// extract this service somewhere and unit test it:
+var invertHash = function (hash) {
+    var newHash = {};
+    for (var key in hash) {
+        var val = hash[key];
+        newHash[val] = key;
+    }
+    return newHash;
+};
+// extract this service somewhere and unit test it:
+var getUserAttributesFromResponse = function (userAttributes, response) {
+    var invertedUserAttributes = invertHash(userAttributes);
+    var userAttributesBackendKeys = Object.keys(invertedUserAttributes);
+    var userAttributesToReturn = {};
+    Object.keys(response.data.data).forEach(function (key) {
+        if (userAttributesBackendKeys.indexOf(key) !== -1) {
+            userAttributesToReturn[invertedUserAttributes[key]] = response.data.data[key];
+        }
+    });
+    return userAttributesToReturn;
+};
+var generateAuthActions = function (config) {
+    var authUrl = config.authUrl, userAttributes = config.userAttributes, userRegistrationAttributes = config.userRegistrationAttributes;
     var registerUser = function (userRegistrationDetails) { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
-            var firstName, email, password, passwordConfirmation, response, userAttributes, error_1;
+            var email, password, passwordConfirmation, data, response, userAttributesToSave, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         dispatch(exports.registrationRequestSent());
-                        firstName = userRegistrationDetails.firstName, email = userRegistrationDetails.email, password = userRegistrationDetails.password, passwordConfirmation = userRegistrationDetails.passwordConfirmation;
+                        email = userRegistrationDetails.email, password = userRegistrationDetails.password, passwordConfirmation = userRegistrationDetails.passwordConfirmation;
+                        data = {
+                            email: email,
+                            password: password,
+                            password_confirmation: passwordConfirmation,
+                        };
+                        Object.keys(userRegistrationAttributes).forEach(function (key) {
+                            var backendKey = userRegistrationAttributes[key];
+                            data[backendKey] = userRegistrationDetails[key];
+                        });
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
                         return [4 /*yield*/, axios_1.default({
                                 method: 'POST',
                                 url: authUrl,
-                                data: {
-                                    email: email,
-                                    name: firstName,
-                                    password: password,
-                                    password_confirmation: passwordConfirmation,
-                                },
+                                data: data,
                             })];
                     case 2:
                         response = _a.sent();
                         auth_1.setAuthHeaders(response.headers);
+                        // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
                         auth_1.persistAuthHeadersInLocalStorage(response.headers);
-                        userAttributes = {
-                            firstName: firstName,
-                        };
-                        dispatch(exports.registrationRequestSucceeded(userAttributes));
+                        userAttributesToSave = getUserAttributesFromResponse(userAttributes, response);
+                        dispatch(exports.registrationRequestSucceeded(userAttributesToSave)); // <- need to make this reducer more flexible
                         return [3 /*break*/, 4];
                     case 3:
                         error_1 = _a.sent();
@@ -132,7 +168,7 @@ var theActionsExportThatShouldBeRenamed = function (authUrl) {
     }; };
     var verifyToken = function (verificationParams) { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
-            var response, name_1, userAttributes, error_2;
+            var response, userAttributesToSave, error_2;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -147,13 +183,11 @@ var theActionsExportThatShouldBeRenamed = function (authUrl) {
                             })];
                     case 2:
                         response = _a.sent();
-                        name_1 = response.data.data.name;
                         auth_1.setAuthHeaders(response.headers);
+                        // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
                         auth_1.persistAuthHeadersInLocalStorage(response.headers);
-                        userAttributes = {
-                            firstName: name_1,
-                        };
-                        dispatch(exports.verifyTokenRequestSucceeded(userAttributes));
+                        userAttributesToSave = getUserAttributesFromResponse(userAttributes, response);
+                        dispatch(exports.verifyTokenRequestSucceeded(userAttributesToSave));
                         return [3 /*break*/, 4];
                     case 3:
                         error_2 = _a.sent();
@@ -166,7 +200,7 @@ var theActionsExportThatShouldBeRenamed = function (authUrl) {
     }; };
     var signInUser = function (userSignInCredentials) { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
-            var email, password, response, name_2, userAttributes, error_3;
+            var email, password, response, userAttributesToSave, error_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -186,12 +220,10 @@ var theActionsExportThatShouldBeRenamed = function (authUrl) {
                     case 2:
                         response = _a.sent();
                         auth_1.setAuthHeaders(response.headers);
+                        // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
                         auth_1.persistAuthHeadersInLocalStorage(response.headers);
-                        name_2 = response.data.data.name;
-                        userAttributes = {
-                            firstName: name_2,
-                        };
-                        dispatch(exports.signInRequestSucceeded(userAttributes));
+                        userAttributesToSave = getUserAttributesFromResponse(userAttributes, response);
+                        dispatch(exports.signInRequestSucceeded(userAttributesToSave));
                         return [3 /*break*/, 4];
                     case 3:
                         error_3 = _a.sent();
@@ -220,6 +252,7 @@ var theActionsExportThatShouldBeRenamed = function (authUrl) {
                     case 2:
                         _a.sent();
                         auth_1.deleteAuthHeaders();
+                        // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
                         auth_1.deleteAuthHeadersFromLocalStorage();
                         dispatch(exports.signOutRequestSucceeded());
                         return [3 /*break*/, 4];
@@ -232,12 +265,24 @@ var theActionsExportThatShouldBeRenamed = function (authUrl) {
             });
         });
     }; };
+    var verifyCredentials = function (store) {
+        // Gotta check what the platform is:
+        if (localStorage.getItem('access-token')) {
+            var verificationParams = {
+                'access-token': localStorage.getItem('access-token'),
+                client: localStorage.getItem('client'),
+                uid: localStorage.getItem('uid'),
+            };
+            store.dispatch(verifyToken(verificationParams));
+        }
+    };
     return {
         registerUser: registerUser,
         verifyToken: verifyToken,
         signInUser: signInUser,
         signOutUser: signOutUser,
+        verifyCredentials: verifyCredentials,
     };
 };
-exports.default = theActionsExportThatShouldBeRenamed;
+exports.default = generateAuthActions;
 //# sourceMappingURL=actions.js.map

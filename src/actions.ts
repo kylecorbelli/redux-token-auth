@@ -1,6 +1,8 @@
 import axios from 'axios'
-// import { authUrl } from '../../constants' // this has to be passed in by the package user
-import { Dispatch } from 'redux'
+import {
+  Dispatch,
+  Store,
+} from 'redux'
 import {
   AuthResponse,
   VerificationParams,
@@ -8,6 +10,7 @@ import {
   UserRegistrationDetails,
   UserSignInCredentials,
   UserSignOutCredentials,
+  ActionsExport,
   REGISTRATION_REQUEST_SENT,
   REGISTRATION_REQUEST_SUCCEEDED,
   REGISTRATION_REQUEST_FAILED,
@@ -105,36 +108,78 @@ export const signOutRequestFailed = (): SignOutRequestFailedAction => ({
 // Async Redux Thunk actions:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// Maybe type this even:
-const theActionsExportThatShouldBeRenamed = (authUrl: string) => {
+// what is the second argument here? it needs to contain configs for (1) userRegistrationDetails, (2) userAttributes, (3) maybe even the authUrl... just make it a simple one-argument function
+// we'll also want the userAttributes to pertain to the end-user's initial state and heaven forbid reducers
+// actually, userSignInCredentials, userSignOutCredentials, and verificationParams are always the same as per devise token auth
+// const config = {
+//   authUrl: 'http://url.com',
+//   userAttributes: {
+//     firstName: 'name' // <- key is how the frontend knows it, value is how the backend knows it
+//   },
+//   userRegistrationAttributes: { <- this is for keys/vals IN ADDITION TO email, password and passwordConfirmation
+//     firstName: 'name'
+//   },
+// }
+
+// extract this service somewhere and unit test it:
+const invertHash = (hash: { [key: string]: any }) => {
+  const newHash = {}
+  for (let key in hash) {
+    const val = hash[key]
+    newHash[val] = key
+  }
+  return newHash
+}
+
+// extract this service somewhere and unit test it:
+const getUserAttributesFromResponse = (userAttributes: any, response: any) => {
+  const invertedUserAttributes = invertHash(userAttributes)
+  const userAttributesBackendKeys = Object.keys(invertedUserAttributes)
+  const userAttributesToReturn = {}
+  Object.keys(response.data.data).forEach((key: string) => {
+    if (userAttributesBackendKeys.indexOf(key) !== -1) {
+      userAttributesToReturn[invertedUserAttributes[key]] = response.data.data[key]
+    }
+  })
+  return userAttributesToReturn
+}
+
+const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
+  const {
+    authUrl,
+    userAttributes,
+    userRegistrationAttributes,
+  } = config
+
   const registerUser = (
     userRegistrationDetails: UserRegistrationDetails,
   ) => async function (dispatch: Dispatch<{}>): Promise<void> {
     dispatch(registrationRequestSent())
     const {
-      firstName,
       email,
       password,
       passwordConfirmation,
     } = userRegistrationDetails
+    const data = {
+      email,
+      password,
+      password_confirmation: passwordConfirmation,
+    }
+    Object.keys(userRegistrationAttributes).forEach((key: string) => {
+      const backendKey = userRegistrationAttributes[key]
+      data[backendKey] = userRegistrationDetails[key]
+    })
     try {
       const response: AuthResponse = await axios({
         method: 'POST',
         url: authUrl,
-        data: {
-          email,
-          name: firstName, // even this is tricky because it requires the user's devise configuration to allow the "name" attribute
-          password,
-          password_confirmation: passwordConfirmation,
-        },
+        data,
       })
       setAuthHeaders(response.headers)
+      // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
       persistAuthHeadersInLocalStorage(response.headers)
-      // Gonna need to refer to the passed-in User model configuration from the package user
-      const userAttributes: UserAttributes = {
-        firstName,
-      }
-      dispatch(registrationRequestSucceeded(userAttributes))
+      const userAttributesToSave = getUserAttributesFromResponse(userAttributes, response)
+      dispatch(registrationRequestSucceeded(userAttributesToSave)) // <- need to make this reducer more flexible
     } catch (error) {
       dispatch(registrationRequestFailed())
       throw error
@@ -151,14 +196,11 @@ const theActionsExportThatShouldBeRenamed = (authUrl: string) => {
         url: `${authUrl}/validate_token`,
         params: verificationParams,
       })
-      const { name } = response.data.data
       setAuthHeaders(response.headers)
+      // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
       persistAuthHeadersInLocalStorage(response.headers)
-      // Gonna need to refer to the passed-in User model configuration from the package user
-      const userAttributes: UserAttributes = {
-        firstName: name,
-      }
-      dispatch(verifyTokenRequestSucceeded(userAttributes))
+      const userAttributesToSave = getUserAttributesFromResponse(userAttributes, response)
+      dispatch(verifyTokenRequestSucceeded(userAttributesToSave))
     } catch (error) {
       dispatch(verifyTokenRequestFailed())
     }
@@ -182,13 +224,10 @@ const theActionsExportThatShouldBeRenamed = (authUrl: string) => {
         },
       })
       setAuthHeaders(response.headers)
+      // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
       persistAuthHeadersInLocalStorage(response.headers)
-      // Gonna need to refer to the passed-in User model configuration from the package user
-      const { name } = response.data.data
-      const userAttributes: UserAttributes = {
-        firstName: name,
-      }
-      dispatch(signInRequestSucceeded(userAttributes))
+      const userAttributesToSave = getUserAttributesFromResponse(userAttributes, response)
+      dispatch(signInRequestSucceeded(userAttributesToSave))
     } catch (error) {
       dispatch(signInRequestFailed())
       throw error
@@ -206,6 +245,7 @@ const theActionsExportThatShouldBeRenamed = (authUrl: string) => {
         data: userSignOutCredentials,
       })
       deleteAuthHeaders()
+      // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
       deleteAuthHeadersFromLocalStorage()
       dispatch(signOutRequestSucceeded())
     } catch (error) {
@@ -214,12 +254,25 @@ const theActionsExportThatShouldBeRenamed = (authUrl: string) => {
     }
   }
 
+  const verifyCredentials = (store: Store<{}>): void => {
+    // Gotta check what the platform is:
+    if (localStorage.getItem('access-token')) {
+      const verificationParams: VerificationParams = {
+        'access-token': localStorage.getItem('access-token') as string,
+        client: localStorage.getItem('client') as string,
+        uid: localStorage.getItem('uid') as string,
+      }
+      store.dispatch<any>(verifyToken(verificationParams))
+    }
+  }
+
   return {
     registerUser,
     verifyToken,
     signInUser,
     signOutUser,
+    verifyCredentials,
   }
 }
 
-export default theActionsExportThatShouldBeRenamed
+export default generateAuthActions

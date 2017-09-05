@@ -1,5 +1,4 @@
 "use strict";
-// Maybe make this the index.ts of a types directory so you can split things up
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.REGISTRATION_REQUEST_SENT = 'redux-token-auth/REGISTRATION_REQUEST_SENT';
 exports.REGISTRATION_REQUEST_SUCCEEDED = 'redux-token-auth/REGISTRATION_REQUEST_SUCCEEDED';

@@ -1,4 +1,7 @@
-// Maybe make this the index.ts of a types directory so you can split things up
+import {
+  Dispatch,
+  Store,
+} from 'redux'
 
 // This one in particular will be a little tough because we don't know what the package user's "User" model looks like:
 export interface UserAttributes {}
@@ -23,6 +26,9 @@ export interface AuthHeaders {
 
 export interface AuthResponse {
   readonly headers: AuthHeaders
+  readonly data: {
+    readonly data: { [key: string]: any }
+  }
 }
 
 export interface VerificationParams {
@@ -68,10 +74,10 @@ export type SIGNOUT_REQUEST_FAILED = 'redux-token-auth/SIGNOUT_REQUEST_FAILED'
 export const SIGNOUT_REQUEST_FAILED: SIGNOUT_REQUEST_FAILED = 'redux-token-auth/SIGNOUT_REQUEST_FAILED'
 
 export interface UserRegistrationDetails {
-  readonly firstName: string
   readonly email: string
   readonly password: string
   readonly passwordConfirmation: string
+  readonly [key: string]: any
 }
 
 export interface UserSignInCredentials {
@@ -154,3 +160,17 @@ export type ReduxAction = RegistrationRequestSentAction
   | SignOutRequestSentAction
   | SignOutRequestSucceededAction
   | SignOutRequestFailedAction
+
+export type ReduxAsyncAction = (input: any) => (dispatch: Dispatch<{}>) => Promise<void>
+
+export type VerifyCredentialsFunction = (store: Store<{}>) => void
+
+export interface ActionsExport {
+  readonly registerUser: ReduxAsyncAction
+  readonly verifyToken: ReduxAsyncAction
+  readonly signInUser: ReduxAsyncAction
+  readonly signOutUser: ReduxAsyncAction
+  readonly verifyCredentials: VerifyCredentialsFunction
+}
+
+export type ActionsGeneratorExport = (config: { [key: string]: any }) => ActionsExport
