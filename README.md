@@ -2,6 +2,8 @@
 
 [![CircleCI](https://circleci.com/gh/kylecorbelli/redux-token-auth.svg?style=shield)](https://circleci.com/gh/kylecorbelli/redux-token-auth)
 
+[![codecov](https://codecov.io/gh/kylecorbelli/redux-token-auth/branch/master/graph/badge.svg)](https://codecov.io/gh/kylecorbelli/redux-token-auth)
+
 <img src='https://ih1.redbubble.net/image.170071318.1044/ap,550x550,12x16,1,transparent,t.u4.png' height='500'>
 
 This is going to be the raddest client-side solution for user authentication using React and Redux with a Rails backend that uses Devise...
