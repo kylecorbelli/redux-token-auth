@@ -5,12 +5,26 @@
   "main": "dist/index.js",
   "types": "index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "build": "tsc"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/kylecorbelli/redux-token-auth.git"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ]
   },
   "keywords": [
     "react",
@@ -25,11 +39,12 @@
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^20.0.8",
-    "jest": "^20.0.4",
+    "codecov": "^2.3.0",
+    "jest": "^21.0.0",
+    "ts-jest": "^21.0.1",
     "typescript": "^2.5.2"
   },
   "dependencies": {
-    "@types/axios": "^0.14.0",
     "axios": "^0.16.2",
     "redux": "^3.7.2"
   }

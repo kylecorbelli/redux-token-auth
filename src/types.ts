@@ -3,7 +3,6 @@ import {
   Store,
 } from 'redux'
 
-// This one in particular will be a little tough because we don't know what the package user's "User" model looks like:
 export interface UserAttributes {}
 
 export interface User {
