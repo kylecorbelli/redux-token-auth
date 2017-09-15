@@ -43,7 +43,6 @@
     "typescript": "^2.5.2"
   },
   "dependencies": {
-    "@types/axios": "^0.14.0",
     "axios": "^0.16.2",
     "redux": "^3.7.2"
   }
