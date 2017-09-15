@@ -37,10 +37,11 @@ import {
   SignOutRequestFailedAction,
 } from './types'
 import {
-  setAuthHeaders,
   deleteAuthHeaders,
-  persistAuthHeadersInLocalStorage,
   deleteAuthHeadersFromLocalStorage,
+  getUserAttributesFromResponse,
+  persistAuthHeadersInLocalStorage,
+  setAuthHeaders,
 } from './services/auth' // <- maybe this is where you pass in the platform paramter, specifying if it is for a browser or for React Native
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -120,29 +121,6 @@ export const signOutRequestFailed = (): SignOutRequestFailedAction => ({
 //     firstName: 'name'
 //   },
 // }
-
-// extract this service somewhere and unit test it:
-const invertHash = (hash: { [key: string]: any }) => {
-  const newHash = {}
-  for (let key in hash) {
-    const val = hash[key]
-    newHash[val] = key
-  }
-  return newHash
-}
-
-// extract this service somewhere and unit test it:
-const getUserAttributesFromResponse = (userAttributes: any, response: any) => {
-  const invertedUserAttributes = invertHash(userAttributes)
-  const userAttributesBackendKeys = Object.keys(invertedUserAttributes)
-  const userAttributesToReturn = {}
-  Object.keys(response.data.data).forEach((key: string) => {
-    if (userAttributesBackendKeys.indexOf(key) !== -1) {
-      userAttributesToReturn[invertedUserAttributes[key]] = response.data.data[key]
-    }
-  })
-  return userAttributesToReturn
-}
 
 const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
   const {
