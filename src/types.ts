@@ -173,3 +173,7 @@ export interface ActionsExport {
 }
 
 export type ActionsGeneratorExport = (config: { [key: string]: any }) => ActionsExport
+
+export interface SingleLayerStringMap {
+  [key: string]: string
+}

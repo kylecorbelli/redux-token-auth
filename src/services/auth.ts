@@ -1,5 +1,10 @@
 import axios from 'axios'
-import { AuthHeaders } from '../types'
+import { invertMapKeysAndValues } from './utility'
+import {
+  AuthHeaders,
+  AuthResponse,
+  SingleLayerStringMap,
+} from '../types'
 
 const authHeaderKeys: Array<string> = [
   'access-token',
@@ -33,4 +38,19 @@ export const deleteAuthHeadersFromLocalStorage = (): void => {
   authHeaderKeys.forEach((key: string) => {
     localStorage.removeItem(key)
   })
+}
+
+export const getUserAttributesFromResponse = (
+  userAttributes: SingleLayerStringMap,
+  response: AuthResponse
+): SingleLayerStringMap => {
+  const invertedUserAttributes: SingleLayerStringMap = invertMapKeysAndValues(userAttributes)
+  const userAttributesBackendKeys: string[] = Object.keys(invertedUserAttributes)
+  const userAttributesToReturn: SingleLayerStringMap = {}
+  Object.keys(response.data.data).forEach((key: string) => {
+    if (userAttributesBackendKeys.indexOf(key) !== -1) {
+      userAttributesToReturn[invertedUserAttributes[key]] = response.data.data[key]
+    }
+  })
+  return userAttributesToReturn
 }
