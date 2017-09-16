@@ -3,7 +3,9 @@ import {
   Store,
 } from 'redux'
 
-export interface UserAttributes {}
+export interface UserAttributes {
+  [key: string]: string | number | null
+}
 
 export interface User {
   readonly isLoggedIn: boolean
