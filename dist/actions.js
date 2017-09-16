@@ -101,27 +101,6 @@ exports.signOutRequestFailed = function () { return ({
 //     firstName: 'name'
 //   },
 // }
-// extract this service somewhere and unit test it:
-var invertHash = function (hash) {
-    var newHash = {};
-    for (var key in hash) {
-        var val = hash[key];
-        newHash[val] = key;
-    }
-    return newHash;
-};
-// extract this service somewhere and unit test it:
-var getUserAttributesFromResponse = function (userAttributes, response) {
-    var invertedUserAttributes = invertHash(userAttributes);
-    var userAttributesBackendKeys = Object.keys(invertedUserAttributes);
-    var userAttributesToReturn = {};
-    Object.keys(response.data.data).forEach(function (key) {
-        if (userAttributesBackendKeys.indexOf(key) !== -1) {
-            userAttributesToReturn[invertedUserAttributes[key]] = response.data.data[key];
-        }
-    });
-    return userAttributesToReturn;
-};
 var generateAuthActions = function (config) {
     var authUrl = config.authUrl, userAttributes = config.userAttributes, userRegistrationAttributes = config.userRegistrationAttributes;
     var registerUser = function (userRegistrationDetails) { return function (dispatch) {
@@ -154,7 +133,7 @@ var generateAuthActions = function (config) {
                         auth_1.setAuthHeaders(response.headers);
                         // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
                         auth_1.persistAuthHeadersInLocalStorage(response.headers);
-                        userAttributesToSave = getUserAttributesFromResponse(userAttributes, response);
+                        userAttributesToSave = auth_1.getUserAttributesFromResponse(userAttributes, response);
                         dispatch(exports.registrationRequestSucceeded(userAttributesToSave)); // <- need to make this reducer more flexible
                         return [3 /*break*/, 4];
                     case 3:
@@ -186,7 +165,7 @@ var generateAuthActions = function (config) {
                         auth_1.setAuthHeaders(response.headers);
                         // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
                         auth_1.persistAuthHeadersInLocalStorage(response.headers);
-                        userAttributesToSave = getUserAttributesFromResponse(userAttributes, response);
+                        userAttributesToSave = auth_1.getUserAttributesFromResponse(userAttributes, response);
                         dispatch(exports.verifyTokenRequestSucceeded(userAttributesToSave));
                         return [3 /*break*/, 4];
                     case 3:
@@ -222,7 +201,7 @@ var generateAuthActions = function (config) {
                         auth_1.setAuthHeaders(response.headers);
                         // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
                         auth_1.persistAuthHeadersInLocalStorage(response.headers);
-                        userAttributesToSave = getUserAttributesFromResponse(userAttributes, response);
+                        userAttributesToSave = auth_1.getUserAttributesFromResponse(userAttributes, response);
                         dispatch(exports.signInRequestSucceeded(userAttributesToSave));
                         return [3 /*break*/, 4];
                     case 3:
@@ -234,12 +213,17 @@ var generateAuthActions = function (config) {
             });
         });
     }; };
-    var signOutUser = function (userSignOutCredentials) { return function (dispatch) {
+    var signOutUser = function () { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
-            var error_4;
+            var userSignOutCredentials, error_4;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        userSignOutCredentials = {
+                            'access-token': localStorage.getItem('access-token'),
+                            client: localStorage.getItem('client'),
+                            uid: localStorage.getItem('uid'),
+                        };
                         dispatch(exports.signOutRequestSent());
                         _a.label = 1;
                     case 1:

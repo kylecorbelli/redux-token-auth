@@ -29,7 +29,12 @@ var currentUser = function (state, action) {
         case types_1.SIGNIN_REQUEST_FAILED:
             return __assign({}, state, { isLoading: false, isLoggedIn: false });
         case types_1.SIGNOUT_REQUEST_SUCCEEDED:
-            return __assign({}, state, { attributes: __assign({}, state.attributes, { firstName: null }), isLoading: false, isLoggedIn: false });
+            var userAttributeKeys = Object.keys(state.attributes);
+            var allNullUserAttributes = userAttributeKeys.reduce(function (accumulatedNullUserAttributes, currentUserAttributeKey) {
+                return __assign({}, accumulatedNullUserAttributes, (_a = {}, _a[currentUserAttributeKey] = null, _a));
+                var _a;
+            }, {});
+            return __assign({}, state, { attributes: allNullUserAttributes, isLoading: false, isLoggedIn: false });
         case types_1.SIGNOUT_REQUEST_FAILED:
             return __assign({}, state, { isLoading: false });
         default:
