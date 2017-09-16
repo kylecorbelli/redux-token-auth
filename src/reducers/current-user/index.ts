@@ -52,10 +52,10 @@ const currentUser = (state: User = initialUser, action: ReduxAction): User => {
     case SIGNOUT_REQUEST_SUCCEEDED:
       const userAttributeKeys: string[] = Object.keys(state.attributes)
       const allNullUserAttributes: UserAttributes = userAttributeKeys.reduce(
-        (accumulatedNullUserAttributes: UserAttributes, curentUserAttributeKey: string): UserAttributes => {
+        (accumulatedNullUserAttributes: UserAttributes, currentUserAttributeKey: string): UserAttributes => {
           return {
             ...accumulatedNullUserAttributes,
-            [curentUserAttributeKey]: null,
+            [currentUserAttributeKey]: null,
           }
         },
         {},
