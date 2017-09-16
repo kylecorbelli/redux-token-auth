@@ -4,7 +4,7 @@ import {
 
 const initialState: ReduxState = {
   currentUser: {
-    isLoggedIn: false,
+    isSignedIn: false,
     isLoading: false,
     attributes: {},
   },

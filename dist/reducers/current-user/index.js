@@ -23,18 +23,18 @@ var currentUser = function (state, action) {
         case types_1.VERIFY_TOKEN_REQUEST_SUCCEEDED:
         case types_1.SIGNIN_REQUEST_SUCCEEDED:
             var userAttributes = action.payload.userAttributes;
-            return __assign({}, state, { attributes: __assign({}, userAttributes), isLoading: false, isLoggedIn: true });
+            return __assign({}, state, { attributes: __assign({}, userAttributes), isLoading: false, isSignedIn: true });
         case types_1.REGISTRATION_REQUEST_FAILED:
         case types_1.VERIFY_TOKEN_REQUEST_FAILED:
         case types_1.SIGNIN_REQUEST_FAILED:
-            return __assign({}, state, { isLoading: false, isLoggedIn: false });
+            return __assign({}, state, { isLoading: false, isSignedIn: false });
         case types_1.SIGNOUT_REQUEST_SUCCEEDED:
             var userAttributeKeys = Object.keys(state.attributes);
             var allNullUserAttributes = userAttributeKeys.reduce(function (accumulatedNullUserAttributes, currentUserAttributeKey) {
                 return __assign({}, accumulatedNullUserAttributes, (_a = {}, _a[currentUserAttributeKey] = null, _a));
                 var _a;
             }, {});
-            return __assign({}, state, { attributes: allNullUserAttributes, isLoading: false, isLoggedIn: false });
+            return __assign({}, state, { attributes: allNullUserAttributes, isLoading: false, isSignedIn: false });
         case types_1.SIGNOUT_REQUEST_FAILED:
             return __assign({}, state, { isLoading: false });
         default:

@@ -8,7 +8,7 @@ export interface UserAttributes {
 }
 
 export interface User {
-  readonly isLoggedIn: boolean
+  readonly isSignedIn: boolean
   readonly isLoading: boolean
   readonly attributes: UserAttributes
 }

@@ -36,7 +36,7 @@ describe('currentUser', () => {
       firstName: null,
     },
     isLoading: true,
-    isLoggedIn: false,
+    isSignedIn: false,
   }
 
   const loggedInUser: User = {
@@ -45,7 +45,7 @@ describe('currentUser', () => {
       imageUrl: 'http://some.url',
     },
     isLoading: false,
-    isLoggedIn: true,
+    isSignedIn: true,
   }
 
   const loggedInUserWithRequestAlreadySent: User = {
@@ -71,7 +71,7 @@ describe('currentUser', () => {
       const expectedNewState: User = {
         attributes: newUserAttributes,
         isLoading: false,
-        isLoggedIn: true,
+        isSignedIn: true,
       }
       expect(newState).toEqual(expectedNewState)
     })
@@ -103,7 +103,7 @@ describe('currentUser', () => {
       const expectedNewState: User = {
         attributes: newUserAttributes,
         isLoading: false,
-        isLoggedIn: true,
+        isSignedIn: true,
       }
       expect(newState).toEqual(expectedNewState)
     })
@@ -113,12 +113,12 @@ describe('currentUser', () => {
     it('indicates that the current user is no longer loading and is not logged in', () => {
       const loggedInState: User = {
         ...alreadyLoadingState,
-        isLoggedIn: true,
+        isSignedIn: true,
       }
       const action: VerifyTokenRequestFailedAction = verifyTokenRequestFailed()
       const newState: User = currentUser(loggedInState, action)
       expect(newState.isLoading).toBe(false)
-      expect(newState.isLoggedIn).toBe(false)
+      expect(newState.isSignedIn).toBe(false)
     })
   })
 
@@ -140,7 +140,7 @@ describe('currentUser', () => {
       const expectedNewState: User = {
         attributes: newUserAttributes,
         isLoading: false,
-        isLoggedIn: true,
+        isSignedIn: true,
       }
       expect(newState).toEqual(expectedNewState)
     })
@@ -151,7 +151,7 @@ describe('currentUser', () => {
       const action: SignInRequestFailedAction = signInRequestFailed()
       const newState: User = currentUser(alreadyLoadingState, action)
       expect(newState.isLoading).toBe(false)
-      expect(newState.isLoggedIn).toBe(false)
+      expect(newState.isSignedIn).toBe(false)
     })
   })
 
@@ -173,7 +173,7 @@ describe('currentUser', () => {
           imageUrl: null,
         },
         isLoading: false,
-        isLoggedIn: false,
+        isSignedIn: false,
       }
       expect(newState).toEqual(expectedNewState)
     })

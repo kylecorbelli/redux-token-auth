@@ -34,9 +34,11 @@ There are three main things you need to do in order to get `redux-token-auth` ri
 3. Call `verifyCredentials` in your `index.js` file.
 
 `redux-token-auth` has two exports: a Redux reducer, and a function that generates a handful of asynchronous Redux Thunk actions, and a helper function that verifies the current user's credentials as stored in the browser's `localStorage`. React Native equivalents using `AsyncStorage` are roadmapped but not yet supported.
-### 1. Redux Reducer
+### 1. Redux Store
+
+#### Redux Reducer
 `redux-token-auth` ships with a reducer to integrate into your Redux store. Wherever you define your root reducer, simply import and include `reduxTokenAuthReducer` in your call to `combineReducers`:
-```JavaScript
+```javascript
 import { combineReducers } from 'redux'
 import { reduxTokenAuthReducer } from 'redux-token-auth'
 
@@ -47,6 +49,28 @@ const rootReducer = combineReducers({
 export default rootReducer
 ```
 We'll note here again that you need <a href="https://github.com/gaearon/redux-thunk" target="_blank">Redux Thunk</a> integrated into your store in order for `redux-token-auth` to work properly.
+
+#### Initial State
+
+As with any Redux application, when configuring your store you’ll need to specify the initial state. Given the structure of `redux-token-auth`’s reducer, the initial state should be structured something like this:
+
+```javascript
+// redux/initial-state.js
+const initialState = {
+  reduxTokenAuth: {
+    currentUser: {
+      isLoading: false,
+      isSignedIn: false,
+      attributes: {
+        firstName: null, // <-- Just an example. Attributes are whatever you specify in your cofig (below).
+      },
+    },
+  },
+  // All your other state
+}
+
+export default initialState
+```
 
 ### 2. Generate Actions and Helper Function
 `redux-token-auth` provides a function called `generateAuthActions` that takes a config object and returns the asynchronous Redux Thunks actions and the helper function to verify the user’s credentials upon initialization of your application. The following paragraphs explain the config object.
@@ -82,7 +106,7 @@ It is important to note that `email` and `password` should **not** be included i
 
 Create a file called something like `redux-token-auth-config.js` in the root directory of your project. Honestly, it doesn't need to be named that but that's what we'll call it here. Open that file and import `generateAuthActions` from the `redux-token-auth`. As noted above, this is a function that takes your config object as its only input. It returns an object containing several named Redux Thunk actions and the helper function to verify user credentials upon initialization of your app. Here's an example:
 
-```JavaScript
+```javascript
 // redux-token-auth-config.js
 import { generateAuthActions } from 'redux-token-auth'
 import { authUrl } from './constants'
@@ -99,9 +123,9 @@ const config = {
 }
 
 const {
+  registerUser,
   signInUser,
   signOutUser,
-  registerUser,
   verifyCredentials,
 } = generateAuthActions(config)
 
@@ -114,49 +138,13 @@ export {
 ```
 Simply export these functions from your config file. Now they're available throughout your app by importing them from your config file.
 
-`registerUser`, `signInUser`, and `signOutUser` are Redux Thunk actions and thus return Promises.
-
-An example of using one of these functions would be in your sign in form:
-
-```JavaScript
-// components/SignInScreen.js
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { signInUser } from '../redux-token-auth-config' // <-- note this is YOUR file, not the redux-token-auth NPM module
-
-class SignInScreen extends Component {
-  constructor (props) { ... }
-
-  submitForm (e) {
-    e.preventDefault()
-    const { signInUser } = this.props
-    const {
-      email,
-      firstName,
-      password,
-    } = this.state
-    signInUser({ email, firstName, password }) // <-<-<-<-<- here's the important part <-<-<-<-<-
-      .then(...)
-      .catch(...)
-  }
-
-  render () {
-    <div>
-      <form onSubmit={this.submitForm}>...</form>
-    </div>
-  }
-}
-
-export default connect(
-  null,
-  { signInUser },
-)(SignInScreen)
-```
+`registerUser`, `signInUser`, and `signOutUser` are Redux Thunk actions and thus, when wired through `mapDispatchToProps` return Promises.
 
 ### 3. Verifying User Credentials on App Initialization
 Upon initialization of your app, your user could potentially be logged in from their previous session and your application state should reflect that. `redux-token-auth` stores an authenticated user’s auth token in `localStorage`. In order to sync the stored token with both your backend and your Redux store, you’ll use the `verifyCredentials` function that was returned from `generateAuthActions`. In short, it checks for a token, sends a verification request to the backend, and upon receiving a successful response, updates your Redux store. Here's an example of how you wire it up in your `index.js` file, with a single line:
 
-```JavaScript
+```javascript
+// index.js
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux'
@@ -178,10 +166,122 @@ ReactDOM.render(
 
 And that's really all there is to it!
 
+## Usage Examples
+
+### `registerUser`
+```javascript
+// components/RegisterScreen.jsx
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { registerUser } from '../redux-token-auth-config' // <-- note this is YOUR file, not the redux-token-auth NPM module
+
+class RegisterScreen extends Component {
+  constructor (props) { ... }
+
+  ...
+
+  submitForm (e) {
+    e.preventDefault()
+    const { registerUser } = this.props
+    const {
+      email,
+      firstName,
+      password,
+    } = this.state
+    registerUser({ email, firstName, password }) // <-<-<-<-<- here's the important part <-<-<-<-<-
+      .then(...)
+      .catch(...)
+  }
+
+  render () {
+    const { submitForm } = this
+    <div>
+      <form onSubmit={submitForm}>...</form>
+    </div>
+  }
+}
+
+export default connect(
+  null,
+  { registerUser },
+)(RegisterScreen)
+```
+### `signInUser`
+
+```javascript
+// components/SignInScreen.jsx
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { signInUser } from '../redux-token-auth-config' // <-- note this is YOUR file, not the redux-token-auth NPM module
+
+class SignInScreen extends Component {
+  constructor (props) { ... }
+
+  ...
+
+  submitForm (e) {
+    e.preventDefault()
+    const { signInUser } = this.props
+    const {
+      email,
+      password,
+    } = this.state
+    signInUser({ email, password }) // <-<-<-<-<- here's the important part <-<-<-<-<-
+      .then(...)
+      .catch(...)
+  }
+
+  render () {
+    const { submitForm } = this
+    <div>
+      <form onSubmit={submitForm}>...</form>
+    </div>
+  }
+}
+
+export default connect(
+  null,
+  { signInUser },
+)(SignInScreen)
+```
+
+### `signOutUser`
+```javascript
+// components/SiteHeater.jsx
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { signOutUser } from '../redux-token-auth-config' // <-- note this is YOUR file, not the redux-token-auth NPM module
+
+class SiteHeader extends Component {
+  constructor (props) {...}
+
+  signOut (e) {
+    e.preventDefault()
+    const { signOutUser } = this.props
+    signOutUser() // <-<-<-<-<- here's the important part <-<-<-<-<-
+      .then(...)
+      .catch(...)
+  }
+
+  render () {
+    const { signOut } = this
+    <div>
+      <a href="#" onClick={signOut}>Sign Out</a>
+    </div>
+  }
+}
+
+export default connect(
+  null,
+  { signOutUser },
+)(SiteHeader)
+```
+
 ## Roadmap
 - React Native support
-- Password reset actions
-- Email verification actions
+- Password reset support
+- Email verification support
+- Delete account support
 
 ## Contributors
 - Kyle Corbelli
