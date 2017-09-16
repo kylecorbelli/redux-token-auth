@@ -212,9 +212,12 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
     }
   }
 
-  const signOutUser = (
-    userSignOutCredentials: UserSignOutCredentials,
-  ) => async function (dispatch: Dispatch<{}>): Promise<void> {
+  const signOutUser = () => async function (dispatch: Dispatch<{}>): Promise<void> {
+    const userSignOutCredentials: UserSignOutCredentials = {
+      'access-token': localStorage.getItem('access-token') as string,
+      client: localStorage.getItem('client') as string,
+      uid: localStorage.getItem('uid') as string,
+    }
     dispatch(signOutRequestSent())
     try {
       await axios({
