@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var initialState = {
     currentUser: {
-        isLoggedIn: false,
+        isSignedIn: false,
         isLoading: false,
         attributes: {},
     },

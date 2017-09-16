@@ -39,7 +39,7 @@ const currentUser = (state: User = initialUser, action: ReduxAction): User => {
         ...state,
         attributes: { ...userAttributes },
         isLoading: false,
-        isLoggedIn: true,
+        isSignedIn: true,
       }
     case REGISTRATION_REQUEST_FAILED:
     case VERIFY_TOKEN_REQUEST_FAILED:
@@ -47,7 +47,7 @@ const currentUser = (state: User = initialUser, action: ReduxAction): User => {
       return {
         ...state,
         isLoading: false,
-        isLoggedIn: false,
+        isSignedIn: false,
       }
     case SIGNOUT_REQUEST_SUCCEEDED:
       const userAttributeKeys: string[] = Object.keys(state.attributes)
@@ -64,7 +64,7 @@ const currentUser = (state: User = initialUser, action: ReduxAction): User => {
         ...state,
         attributes: allNullUserAttributes,
         isLoading: false,
-        isLoggedIn: false,
+        isSignedIn: false,
       }
     case SIGNOUT_REQUEST_FAILED:
       return {
