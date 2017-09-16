@@ -42,6 +42,7 @@ describe('currentUser', () => {
   const loggedInUser: User = {
     attributes: {
       firstName: 'Snowball',
+      imageUrl: 'http://some.url',
     },
     isLoading: false,
     isLoggedIn: true,
@@ -169,6 +170,7 @@ describe('currentUser', () => {
       const expectedNewState: User = {
         attributes: {
           firstName: null,
+          imageUrl: null,
         },
         isLoading: false,
         isLoggedIn: false,
