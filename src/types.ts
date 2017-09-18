@@ -1,3 +1,4 @@
+import { ComponentClass } from 'react'
 import {
   Dispatch,
   Store,
@@ -13,8 +14,12 @@ export interface User {
   readonly attributes: UserAttributes
 }
 
-export interface ReduxState {
+export interface ReduxTokenAuthState {
   readonly currentUser: User
+}
+
+export interface ReduxState {
+  readonly reduxTokenAuth: ReduxTokenAuthState
 }
 
 export interface AuthHeaders {
@@ -179,3 +184,9 @@ export type ActionsGeneratorExport = (config: { [key: string]: any }) => Actions
 export interface SingleLayerStringMap {
   [key: string]: string
 }
+
+export interface GenerateRequireSignInWrapperConfig {
+  readonly redirectPathIfNotSignedIn: string
+}
+
+export type RequireSignInWrapper = (PageComponent: ComponentClass) => ComponentClass
