@@ -1,6 +1,6 @@
 {
   "name": "redux-token-auth",
-  "version": "0.15.0",
+  "version": "0.18.0",
   "description": "Redux actions and reducers to integrate with Devise Token Auth",
   "main": "dist/index.js",
   "types": "index.d.ts",
@@ -45,7 +45,11 @@
     "typescript": "^2.5.2"
   },
   "dependencies": {
+    "@types/react": "^16.0.5",
+    "@types/react-redux": "^5.0.9",
     "axios": "^0.16.2",
+    "react": "^15.6.1",
+    "react-redux": "^5.0.6",
     "redux": "^3.7.2"
   }
 }

@@ -1,8 +1,8 @@
 import {
-  ReduxState
+  ReduxTokenAuthState
 } from './types'
 
-const initialState: ReduxState = {
+const initialState: ReduxTokenAuthState = {
   currentUser: {
     isSignedIn: false,
     isLoading: false,
