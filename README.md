@@ -19,6 +19,8 @@ It also provides the corresponding Redux reducer to handle these actions.
 
 Additionally, a helper function is provided to verify the current user's auth token upon initialization of your application (`verifyCredentials`).
 
+Finally, `redux-token-auth` provides a component wrapper that will gate your specified page components if the user is not signed in This is to prevent unauthorized users from accessing particular pages in your app. <a href="https://github.com/ReactTraining/react-router">React Router v4.0.0+</a> is required for this to work properly.
+
 ## Installation
 `npm install --save redux-token-auth`
 
@@ -28,10 +30,11 @@ Have you ever installed an NPM module any other way?
 Your project will need the popular <a href="https://github.com/gaearon/redux-thunk" target="_blank">Redux Thunk</a> middleware (written by none other than the man, the myth, the legend Dan Abramov himself) in order to function properly.
 
 ## Making it Work
-There are three main things you need to do in order to get `redux-token-auth` rigged up:
+There are four main things you need to do in order to get `redux-token-auth` rigged up:
 1. Integrate `reduxTokenAuthReducer` into your Redux store.
 2. Generate the Redux Thunk actions and credential verification helper function.
 3. Call `verifyCredentials` in your `index.js` file.
+4. Generate the component wrapper to gate your protected pages by invoking `generateRequireSignInWrapper`.
 
 `redux-token-auth` has two exports: a Redux reducer, and a function that generates a handful of asynchronous Redux Thunk actions, and a helper function that verifies the current user's credentials as stored in the browser's `localStorage`. React Native equivalents using `AsyncStorage` are roadmapped but not yet supported.
 ### 1. Redux Store
@@ -148,7 +151,6 @@ Upon initialization of your app, your user could potentially be logged in from t
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux'
-import { Store } from 'redux'
 import App from './components/App'
 import configureStore from './redux/configure-store'
 import { verifyCredentials } from './redux-token-auth-config' // <-- note this is YOUR file, not the redux-token-auth NPM module
@@ -166,7 +168,45 @@ ReactDOM.render(
 
 And that's really all there is to it!
 
+### 4. Generate the Component Wrapper to Gate Pages
+Naturally, some of the pages of your application will only pertain to authorized users and shouldn’t be accessible to users who are not signed in. `redux-token-auth` provides a way to wrap these protected page components so that unauthorized users will be redirected away if they try to access them.
+
+You’re given the flexibility to specify where those users are redirected to with a simple config object. In the file where you specify your client-side routing, import `generateRequireSignInWrapper` from `redux-token-auth`. This is a function that takes a single config object in order to specify the route you’d like unauthorized users redirected to, using the `redirectPathIfNotSignedIn` attribute. It’s important to note, the path you pass in should begin with `/`. For example:
+
+```javascript
+import * as React from 'react'
+import {
+  Router,
+  Route,
+} from 'react-router-dom'
+import { createBrowserHistory } from 'history'
+import HomePage from './components/HomePage'
+import SomeProtectedPageComponent from './components/SomeProtectedPageComponent'
+import SignInPage from './components/SignInPage'
+import { generateRequireSignInWrapper } from 'redux-token-auth'
+
+const requireSignIn = generateRequireSignInWrapper({
+  redirectPathIfNotSignedIn: '/signin',
+})
+
+const history = createBrowserHistory({})
+
+const Routes = () => (
+  <Router history={history}>
+    <div>
+      <Route exact={true} path="/" component={HomePage} />
+      <Route path="/protected" component={requireSignIn(SomeProtectedPageComponent)} />
+      <Route path="/signin" component={SignInPage} />
+    </div>
+  </Router>
+)
+```
+
+Simply wrap the page components you want protected with the generated wrapper and you’re good to go!
+
 ## Usage Examples
+
+Now that everything's set up, let’s take a look at how you’ll use the generated thunk actions in your application.
 
 ### `registerUser`
 ```javascript
@@ -247,7 +287,7 @@ export default connect(
 
 ### `signOutUser`
 ```javascript
-// components/SiteHeater.jsx
+// components/SiteHeader.jsx
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { signOutUser } from '../redux-token-auth-config' // <-- note this is YOUR file, not the redux-token-auth NPM module
