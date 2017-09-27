@@ -36,6 +36,7 @@ import {
   SignOutRequestSucceededAction,
   SignOutRequestFailedAction,
 } from './types'
+import Storage from './Storage'
 import {
   deleteAuthHeaders,
   deleteAuthHeadersFromLocalStorage,
@@ -214,9 +215,9 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
 
   const signOutUser = () => async function (dispatch: Dispatch<{}>): Promise<void> {
     const userSignOutCredentials: UserSignOutCredentials = {
-      'access-token': localStorage.getItem('access-token') as string,
-      client: localStorage.getItem('client') as string,
-      uid: localStorage.getItem('uid') as string,
+      'access-token': await Storage.getItem('access-token') as string,
+      client: await Storage.getItem('client') as string,
+      uid: await Storage.getItem('uid') as string,
     }
     dispatch(signOutRequestSent())
     try {
@@ -235,13 +236,13 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
     }
   }
 
-  const verifyCredentials = (store: Store<{}>): void => {
+  const verifyCredentials = async (store: Store<{}>): Promise<void> => {
     // Gotta check what the platform is:
-    if (localStorage.getItem('access-token')) {
+    if (await Storage.getItem('access-token')) {
       const verificationParams: VerificationParams = {
-        'access-token': localStorage.getItem('access-token') as string,
-        client: localStorage.getItem('client') as string,
-        uid: localStorage.getItem('uid') as string,
+        'access-token': await Storage.getItem('access-token') as string,
+        client: await Storage.getItem('client') as string,
+        uid: await Storage.getItem('uid') as string,
       }
       store.dispatch<any>(verifyToken(verificationParams))
     }

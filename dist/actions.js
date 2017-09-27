@@ -34,9 +34,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 var axios_1 = require("axios");
 var types_1 = require("./types");
+var Storage_1 = require("./Storage");
 var auth_1 = require("./services/auth"); // <- maybe this is where you pass in the platform paramter, specifying if it is for a browser or for React Native
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Pure Redux actions:
@@ -215,51 +217,72 @@ var generateAuthActions = function (config) {
     }; };
     var signOutUser = function () { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
-            var userSignOutCredentials, error_4;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var userSignOutCredentials, _a, _b, error_4;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
-                        userSignOutCredentials = {
-                            'access-token': localStorage.getItem('access-token'),
-                            client: localStorage.getItem('client'),
-                            uid: localStorage.getItem('uid'),
-                        };
-                        dispatch(exports.signOutRequestSent());
-                        _a.label = 1;
+                        _a = {};
+                        _b = 'access-token';
+                        return [4 /*yield*/, Storage_1.default.getItem('access-token')];
                     case 1:
-                        _a.trys.push([1, 3, , 4]);
+                        _a[_b] = (_c.sent());
+                        return [4 /*yield*/, Storage_1.default.getItem('client')];
+                    case 2:
+                        _a.client = (_c.sent());
+                        return [4 /*yield*/, Storage_1.default.getItem('uid')];
+                    case 3:
+                        userSignOutCredentials = (_a.uid = (_c.sent()),
+                            _a);
+                        dispatch(exports.signOutRequestSent());
+                        _c.label = 4;
+                    case 4:
+                        _c.trys.push([4, 6, , 7]);
                         return [4 /*yield*/, axios_1.default({
                                 method: 'DELETE',
                                 url: authUrl + "/sign_out",
                                 data: userSignOutCredentials,
                             })];
-                    case 2:
-                        _a.sent();
+                    case 5:
+                        _c.sent();
                         auth_1.deleteAuthHeaders();
                         // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
                         auth_1.deleteAuthHeadersFromLocalStorage();
                         dispatch(exports.signOutRequestSucceeded());
-                        return [3 /*break*/, 4];
-                    case 3:
-                        error_4 = _a.sent();
+                        return [3 /*break*/, 7];
+                    case 6:
+                        error_4 = _c.sent();
                         dispatch(exports.signOutRequestFailed());
                         throw error_4;
-                    case 4: return [2 /*return*/];
+                    case 7: return [2 /*return*/];
                 }
             });
         });
     }; };
-    var verifyCredentials = function (store) {
-        // Gotta check what the platform is:
-        if (localStorage.getItem('access-token')) {
-            var verificationParams = {
-                'access-token': localStorage.getItem('access-token'),
-                client: localStorage.getItem('client'),
-                uid: localStorage.getItem('uid'),
-            };
-            store.dispatch(verifyToken(verificationParams));
-        }
-    };
+    var verifyCredentials = function (store) { return __awaiter(_this, void 0, void 0, function () {
+        var verificationParams, _a, _b;
+        return __generator(this, function (_c) {
+            switch (_c.label) {
+                case 0: return [4 /*yield*/, Storage_1.default.getItem('access-token')];
+                case 1:
+                    if (!_c.sent()) return [3 /*break*/, 5];
+                    _a = {};
+                    _b = 'access-token';
+                    return [4 /*yield*/, Storage_1.default.getItem('access-token')];
+                case 2:
+                    _a[_b] = (_c.sent());
+                    return [4 /*yield*/, Storage_1.default.getItem('client')];
+                case 3:
+                    _a.client = (_c.sent());
+                    return [4 /*yield*/, Storage_1.default.getItem('uid')];
+                case 4:
+                    verificationParams = (_a.uid = (_c.sent()),
+                        _a);
+                    store.dispatch(verifyToken(verificationParams));
+                    _c.label = 5;
+                case 5: return [2 /*return*/];
+            }
+        });
+    }); };
     return {
         registerUser: registerUser,
         verifyToken: verifyToken,
