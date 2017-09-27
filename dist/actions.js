@@ -39,7 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var axios_1 = require("axios");
 var types_1 = require("./types");
 var AsyncLocalStorage_1 = require("./AsyncLocalStorage");
-var auth_1 = require("./services/auth"); // <- maybe this is where you pass in the platform paramter, specifying if it is for a browser or for React Native
+var auth_1 = require("./services/auth");
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Pure Redux actions:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122,10 +122,9 @@ var generateAuthActions = function (config) {
                     case 2:
                         response = _a.sent();
                         auth_1.setAuthHeaders(response.headers);
-                        // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
                         auth_1.persistAuthHeadersInDeviceStorage(Storage, response.headers);
                         userAttributesToSave = auth_1.getUserAttributesFromResponse(userAttributes, response);
-                        dispatch(exports.registrationRequestSucceeded(userAttributesToSave)); // <- need to make this reducer more flexible
+                        dispatch(exports.registrationRequestSucceeded(userAttributesToSave));
                         return [3 /*break*/, 4];
                     case 3:
                         error_1 = _a.sent();
@@ -154,7 +153,6 @@ var generateAuthActions = function (config) {
                     case 2:
                         response = _a.sent();
                         auth_1.setAuthHeaders(response.headers);
-                        // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
                         auth_1.persistAuthHeadersInDeviceStorage(Storage, response.headers);
                         userAttributesToSave = auth_1.getUserAttributesFromResponse(userAttributes, response);
                         dispatch(exports.verifyTokenRequestSucceeded(userAttributesToSave));
@@ -190,7 +188,6 @@ var generateAuthActions = function (config) {
                     case 2:
                         response = _a.sent();
                         auth_1.setAuthHeaders(response.headers);
-                        // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
                         auth_1.persistAuthHeadersInDeviceStorage(Storage, response.headers);
                         userAttributesToSave = auth_1.getUserAttributesFromResponse(userAttributes, response);
                         dispatch(exports.signInRequestSucceeded(userAttributesToSave));
@@ -234,8 +231,7 @@ var generateAuthActions = function (config) {
                     case 5:
                         _c.sent();
                         auth_1.deleteAuthHeaders();
-                        // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
-                        auth_1.deleteAuthHeadersFromLocalStorage(Storage);
+                        auth_1.deleteAuthHeadersFromDeviceStorage(Storage);
                         dispatch(exports.signOutRequestSucceeded());
                         return [3 /*break*/, 7];
                     case 6:
