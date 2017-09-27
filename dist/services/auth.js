@@ -38,12 +38,6 @@ var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 var axios_1 = require("axios");
 var utility_1 = require("./utility");
-var Storage_1 = require("../Storage");
-// try {
-//   Storage = AsyncStorage
-// } catch (e) {
-//   Storage = AsyncLocalStorage
-// }
 var authHeaderKeys = [
     'access-token',
     'token-type',
@@ -57,10 +51,10 @@ exports.setAuthHeaders = function (headers) {
     });
 };
 // Will have to take a parameter from the package user to determine if this is for a browser or for React Native:
-exports.persistAuthHeadersInLocalStorage = function (headers) {
+exports.persistAuthHeadersInDeviceStorage = function (Storage, headers) {
     // use multiSet:
     authHeaderKeys.forEach(function (key) {
-        Storage_1.default.setItem(key, headers[key]);
+        Storage.setItem(key, headers[key]);
     });
 };
 exports.deleteAuthHeaders = function () {
@@ -69,11 +63,11 @@ exports.deleteAuthHeaders = function () {
     });
 };
 // Will have to take a parameter from the package user to determine if this is for a browser or for React Native:
-exports.deleteAuthHeadersFromLocalStorage = function () { return __awaiter(_this, void 0, void 0, function () {
+exports.deleteAuthHeadersFromLocalStorage = function (Storage) { return __awaiter(_this, void 0, void 0, function () {
     return __generator(this, function (_a) {
         // can use multiRemove once you've written it:
         authHeaderKeys.forEach(function (key) {
-            Storage_1.default.removeItem(key);
+            Storage.removeItem(key);
             // localStorage.removeItem(key)
         });
         return [2 /*return*/];

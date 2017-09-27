@@ -5,6 +5,7 @@ import {
 } from 'redux'
 import {
   AuthResponse,
+  DeviceStorage,
   VerificationParams,
   UserAttributes,
   UserRegistrationDetails,
@@ -36,12 +37,12 @@ import {
   SignOutRequestSucceededAction,
   SignOutRequestFailedAction,
 } from './types'
-import Storage from './Storage'
+import AsyncLocalStorage from './AsyncLocalStorage'
 import {
   deleteAuthHeaders,
   deleteAuthHeadersFromLocalStorage,
   getUserAttributesFromResponse,
-  persistAuthHeadersInLocalStorage,
+  persistAuthHeadersInDeviceStorage,
   setAuthHeaders,
 } from './services/auth' // <- maybe this is where you pass in the platform paramter, specifying if it is for a browser or for React Native
 
@@ -110,25 +111,15 @@ export const signOutRequestFailed = (): SignOutRequestFailedAction => ({
 // Async Redux Thunk actions:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// what is the second argument here? it needs to contain configs for (1) userRegistrationDetails, (2) userAttributes, (3) maybe even the authUrl... just make it a simple one-argument function
-// we'll also want the userAttributes to pertain to the end-user's initial state and heaven forbid reducers
-// actually, userSignInCredentials, userSignOutCredentials, and verificationParams are always the same as per devise token auth
-// const config = {
-//   authUrl: 'http://url.com',
-//   userAttributes: {
-//     firstName: 'name' // <- key is how the frontend knows it, value is how the backend knows it
-//   },
-//   userRegistrationAttributes: { <- this is for keys/vals IN ADDITION TO email, password and passwordConfirmation
-//     firstName: 'name'
-//   },
-// }
-
 const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
   const {
     authUrl,
+    storage,
     userAttributes,
     userRegistrationAttributes,
   } = config
+
+  const Storage: DeviceStorage = Boolean(storage.flushGetRequests) ? storage : AsyncLocalStorage
 
   const registerUser = (
     userRegistrationDetails: UserRegistrationDetails,
@@ -156,7 +147,7 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
       })
       setAuthHeaders(response.headers)
       // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
-      persistAuthHeadersInLocalStorage(response.headers)
+      persistAuthHeadersInDeviceStorage(Storage, response.headers)
       const userAttributesToSave = getUserAttributesFromResponse(userAttributes, response)
       dispatch(registrationRequestSucceeded(userAttributesToSave)) // <- need to make this reducer more flexible
     } catch (error) {
@@ -177,7 +168,7 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
       })
       setAuthHeaders(response.headers)
       // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
-      persistAuthHeadersInLocalStorage(response.headers)
+      persistAuthHeadersInDeviceStorage(Storage, response.headers)
       const userAttributesToSave = getUserAttributesFromResponse(userAttributes, response)
       dispatch(verifyTokenRequestSucceeded(userAttributesToSave))
     } catch (error) {
@@ -204,7 +195,7 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
       })
       setAuthHeaders(response.headers)
       // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
-      persistAuthHeadersInLocalStorage(response.headers)
+      persistAuthHeadersInDeviceStorage(Storage, response.headers)
       const userAttributesToSave = getUserAttributesFromResponse(userAttributes, response)
       dispatch(signInRequestSucceeded(userAttributesToSave))
     } catch (error) {
@@ -228,7 +219,7 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
       })
       deleteAuthHeaders()
       // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
-      deleteAuthHeadersFromLocalStorage()
+      deleteAuthHeadersFromLocalStorage(Storage)
       dispatch(signOutRequestSucceeded())
     } catch (error) {
       dispatch(signOutRequestFailed())

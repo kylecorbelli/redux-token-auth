@@ -3,15 +3,9 @@ import { invertMapKeysAndValues } from './utility'
 import {
   AuthHeaders,
   AuthResponse,
+  DeviceStorage,
   SingleLayerStringMap,
 } from '../types'
-import Storage from '../Storage'
-
-// try {
-//   Storage = AsyncStorage
-// } catch (e) {
-//   Storage = AsyncLocalStorage
-// }
 
 const authHeaderKeys: Array<string> = [
   'access-token',
@@ -28,7 +22,7 @@ export const setAuthHeaders = (headers: AuthHeaders): void => {
 }
 
 // Will have to take a parameter from the package user to determine if this is for a browser or for React Native:
-export const persistAuthHeadersInLocalStorage = (headers: AuthHeaders): void => {
+export const persistAuthHeadersInDeviceStorage = (Storage: DeviceStorage, headers: AuthHeaders): void => {
   // use multiSet:
   authHeaderKeys.forEach((key: string) => {
     Storage.setItem(key, headers[key])
@@ -42,7 +36,7 @@ export const deleteAuthHeaders = (): void => {
 }
 
 // Will have to take a parameter from the package user to determine if this is for a browser or for React Native:
-export const deleteAuthHeadersFromLocalStorage = async (): Promise<void> => {
+export const deleteAuthHeadersFromLocalStorage = async (Storage: DeviceStorage): Promise<void> => {
   // can use multiRemove once you've written it:
   authHeaderKeys.forEach((key: string) => {
     Storage.removeItem(key)
