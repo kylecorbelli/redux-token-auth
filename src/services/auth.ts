@@ -5,6 +5,90 @@ import {
   AuthResponse,
   SingleLayerStringMap,
 } from '../types'
+import { AsyncStorage } from 'react-native'
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Rip this out into its own npm package:
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+const AsyncLocalStorage = {
+  getItem: (key: string): Promise<any> => new Promise((resolve, reject) => {
+    try {
+      const value: string | null = window.localStorage.getItem(key)
+      resolve(value)
+    } catch (error) {
+      reject(error)
+    }
+  }),
+
+  setItem: (key: string, value: string) => new Promise((resolve, reject) => {
+    try {
+      window.localStorage.setItem(key, value)
+      resolve(value)
+    } catch (error) {
+      reject(error)
+    }
+  }),
+
+  removeItem: (key: string): Promise<any> => new Promise((resolve, reject) => {
+    try {
+      const value: string | null = window.localStorage.getItem(key)
+      window.localStorage.removeItem(key)
+      resolve(value)
+    } catch (error) {
+      reject(error)
+    } 
+  }),
+
+  clear: () => new Promise((resolve, reject) => {
+    try {
+      window.localStorage.clear()
+      resolve(true)
+    } catch (error) {
+      reject(error)
+    }
+  }),
+
+  getAllKeys: () => new Promise((resolve, reject) => {
+    try {
+      const allKeys = Object.keys(window.localStorage)
+      resolve(allKeys)
+    } catch (error) {
+      reject(error)
+    }
+  }),
+
+  multiGet: (keys: string[]) => new Promise((resolve, reject) => {
+    try {
+      const values = keys.map(key => [ key, window.localStorage.getItem(key) ])
+      resolve(values)
+    } catch (error) {
+      reject(error)
+    }
+  }),
+
+  multiSet: (keyValuePairs: string[][]) => new Promise((resolve, reject) => {
+    try {
+      keyValuePairs.forEach(keyValuePair => window.localStorage.setItem(keyValuePair[0], keyValuePair[1]))
+      const newKeyValuePairs = keyValuePairs.map(keyValuePair => [ keyValuePair[0], window.localStorage.getItem(keyValuePair[0]) ])
+      resolve(newKeyValuePairs)
+    } catch (error) {
+      reject(error)
+    }
+  }),
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ^ Rip this out into its own npm package
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+let Storage = window.localStorage ? AsyncLocalStorage : AsyncStorage
+
+// try {
+//   Storage = AsyncStorage
+// } catch (e) {
+//   Storage = AsyncLocalStorage
+// }
 
 const authHeaderKeys: Array<string> = [
   'access-token',
@@ -22,8 +106,9 @@ export const setAuthHeaders = (headers: AuthHeaders): void => {
 
 // Will have to take a parameter from the package user to determine if this is for a browser or for React Native:
 export const persistAuthHeadersInLocalStorage = (headers: AuthHeaders): void => {
+  // use multiSet:
   authHeaderKeys.forEach((key: string) => {
-    localStorage.setItem(key, headers[key])
+    Storage.setItem(key, headers[key])
   })
 }
 
@@ -34,9 +119,11 @@ export const deleteAuthHeaders = (): void => {
 }
 
 // Will have to take a parameter from the package user to determine if this is for a browser or for React Native:
-export const deleteAuthHeadersFromLocalStorage = (): void => {
+export const deleteAuthHeadersFromLocalStorage = async (): Promise<void> => {
+  // can use multiRemove once you've written it:
   authHeaderKeys.forEach((key: string) => {
-    localStorage.removeItem(key)
+    Storage.removeItem(key)
+    // localStorage.removeItem(key)
   })
 }
 
