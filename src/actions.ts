@@ -40,11 +40,11 @@ import {
 import AsyncLocalStorage from './AsyncLocalStorage'
 import {
   deleteAuthHeaders,
-  deleteAuthHeadersFromLocalStorage,
+  deleteAuthHeadersFromDeviceStorage,
   getUserAttributesFromResponse,
   persistAuthHeadersInDeviceStorage,
   setAuthHeaders,
-} from './services/auth' // <- maybe this is where you pass in the platform paramter, specifying if it is for a browser or for React Native
+} from './services/auth'
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Pure Redux actions:
@@ -146,10 +146,9 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
         data,
       })
       setAuthHeaders(response.headers)
-      // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
       persistAuthHeadersInDeviceStorage(Storage, response.headers)
       const userAttributesToSave = getUserAttributesFromResponse(userAttributes, response)
-      dispatch(registrationRequestSucceeded(userAttributesToSave)) // <- need to make this reducer more flexible
+      dispatch(registrationRequestSucceeded(userAttributesToSave))
     } catch (error) {
       dispatch(registrationRequestFailed())
       throw error
@@ -167,7 +166,6 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
         params: verificationParams,
       })
       setAuthHeaders(response.headers)
-      // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
       persistAuthHeadersInDeviceStorage(Storage, response.headers)
       const userAttributesToSave = getUserAttributesFromResponse(userAttributes, response)
       dispatch(verifyTokenRequestSucceeded(userAttributesToSave))
@@ -194,7 +192,6 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
         },
       })
       setAuthHeaders(response.headers)
-      // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
       persistAuthHeadersInDeviceStorage(Storage, response.headers)
       const userAttributesToSave = getUserAttributesFromResponse(userAttributes, response)
       dispatch(signInRequestSucceeded(userAttributesToSave))
@@ -218,8 +215,7 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
         data: userSignOutCredentials,
       })
       deleteAuthHeaders()
-      // Have to check what type of platform it is, depending on the key provided by the end-user... like "browser", "iphone", or "android", etc.:
-      deleteAuthHeadersFromLocalStorage(Storage)
+      deleteAuthHeadersFromDeviceStorage(Storage)
       dispatch(signOutRequestSucceeded())
     } catch (error) {
       dispatch(signOutRequestFailed())
@@ -228,7 +224,6 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
   }
 
   const verifyCredentials = async (store: Store<{}>): Promise<void> => {
-    // Gotta check what the platform is:
     if (await Storage.getItem('access-token')) {
       const verificationParams: VerificationParams = {
         'access-token': await Storage.getItem('access-token') as string,

@@ -21,9 +21,7 @@ export const setAuthHeaders = (headers: AuthHeaders): void => {
   })
 }
 
-// Will have to take a parameter from the package user to determine if this is for a browser or for React Native:
 export const persistAuthHeadersInDeviceStorage = (Storage: DeviceStorage, headers: AuthHeaders): void => {
-  // use multiSet:
   authHeaderKeys.forEach((key: string) => {
     Storage.setItem(key, headers[key])
   })
@@ -35,12 +33,9 @@ export const deleteAuthHeaders = (): void => {
   })
 }
 
-// Will have to take a parameter from the package user to determine if this is for a browser or for React Native:
-export const deleteAuthHeadersFromLocalStorage = async (Storage: DeviceStorage): Promise<void> => {
-  // can use multiRemove once you've written it:
+export const deleteAuthHeadersFromDeviceStorage = async (Storage: DeviceStorage): Promise<void> => {
   authHeaderKeys.forEach((key: string) => {
     Storage.removeItem(key)
-    // localStorage.removeItem(key)
   })
 }
 
