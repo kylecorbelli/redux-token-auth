@@ -190,3 +190,13 @@ export interface GenerateRequireSignInWrapperConfig {
 }
 
 export type RequireSignInWrapper = (PageComponent: ComponentClass) => ComponentClass
+
+export interface DeviceStorage {
+  readonly getItem: (key: string) => Promise<any>
+  readonly setItem: (key: string, value: string) => Promise<any>
+  readonly removeItem: (key: string) => Promise<any>
+  readonly clear: () => Promise<any>
+  readonly getAllKeys: () => Promise<any>
+  readonly multiGet: (keys: string[]) => Promise<any>
+  readonly multiSet: (keyValuePairs: string[][]) => Promise<any>
+}
