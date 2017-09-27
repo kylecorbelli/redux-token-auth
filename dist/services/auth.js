@@ -50,9 +50,7 @@ exports.setAuthHeaders = function (headers) {
         axios_1.default.defaults.headers.common[key] = headers[key];
     });
 };
-// Will have to take a parameter from the package user to determine if this is for a browser or for React Native:
 exports.persistAuthHeadersInDeviceStorage = function (Storage, headers) {
-    // use multiSet:
     authHeaderKeys.forEach(function (key) {
         Storage.setItem(key, headers[key]);
     });
@@ -62,13 +60,10 @@ exports.deleteAuthHeaders = function () {
         delete axios_1.default.defaults.headers.common[key];
     });
 };
-// Will have to take a parameter from the package user to determine if this is for a browser or for React Native:
-exports.deleteAuthHeadersFromLocalStorage = function (Storage) { return __awaiter(_this, void 0, void 0, function () {
+exports.deleteAuthHeadersFromDeviceStorage = function (Storage) { return __awaiter(_this, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        // can use multiRemove once you've written it:
         authHeaderKeys.forEach(function (key) {
             Storage.removeItem(key);
-            // localStorage.removeItem(key)
         });
         return [2 /*return*/];
     });
