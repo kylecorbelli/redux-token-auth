@@ -88,6 +88,12 @@ exports.signOutRequestSucceeded = function () { return ({
 exports.signOutRequestFailed = function () { return ({
     type: types_1.SIGNOUT_REQUEST_FAILED,
 }); };
+exports.setHasVerificationBeenAttempted = function (hasVerificationBeenAttempted) { return ({
+    type: types_1.SET_HAS_VERIFICATION_BEEN_ATTEMPTED,
+    payload: {
+        hasVerificationBeenAttempted: hasVerificationBeenAttempted,
+    },
+}); };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Async Redux Thunk actions:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -263,8 +269,11 @@ var generateAuthActions = function (config) {
                     verificationParams = (_a.uid = (_c.sent()),
                         _a);
                     store.dispatch(verifyToken(verificationParams));
-                    _c.label = 5;
-                case 5: return [2 /*return*/];
+                    return [3 /*break*/, 6];
+                case 5:
+                    store.dispatch(exports.setHasVerificationBeenAttempted(true));
+                    _c.label = 6;
+                case 6: return [2 /*return*/];
             }
         });
     }); };

@@ -14,6 +14,7 @@ import {
   SignOutRequestFailedAction,
   User,
   UserAttributes,
+  SetHasVerificationBeenAttemptedAction,
 } from '../../types'
 import {
   registrationRequestSent,
@@ -28,6 +29,7 @@ import {
   signOutRequestSent,
   signOutRequestSucceeded,
   signOutRequestFailed,
+  setHasVerificationBeenAttempted,
 } from '../../actions'
 
 describe('currentUser', () => {
@@ -195,6 +197,18 @@ describe('currentUser', () => {
         isLoading: false,
       }
       expect(newState).toEqual(expectedNewState)
+    })
+  })
+
+  describe('SET_HAS_VERIFICATION_BEEN_ATTEMPTED', () => {
+    it('sets hasVerificationBeenAttempted', () => {
+      const action: SetHasVerificationBeenAttemptedAction = setHasVerificationBeenAttempted(true)
+      const initialState: User = {
+        ...alreadyLoadingState,
+        hasVerificationBeenAttempted: false,
+      }
+      const newState: User = currentUser(alreadyLoadingState, action)
+      expect(newState.hasVerificationBeenAttempted).toBe(true)
     })
   })
 })

@@ -80,6 +80,9 @@ export const SIGNOUT_REQUEST_SUCCEEDED: SIGNOUT_REQUEST_SUCCEEDED = 'redux-token
 export type SIGNOUT_REQUEST_FAILED = 'redux-token-auth/SIGNOUT_REQUEST_FAILED'
 export const SIGNOUT_REQUEST_FAILED: SIGNOUT_REQUEST_FAILED = 'redux-token-auth/SIGNOUT_REQUEST_FAILED'
 
+export type SET_HAS_VERIFICATION_BEEN_ATTEMPTED = 'redux-token-auth/SET_HAS_VERIFICATION_BEEN_ATTEMPTED'
+export const SET_HAS_VERIFICATION_BEEN_ATTEMPTED: SET_HAS_VERIFICATION_BEEN_ATTEMPTED = 'redux-token-auth/SET_HAS_VERIFICATION_BEEN_ATTEMPTED'
+
 export interface UserRegistrationDetails {
   readonly email: string
   readonly password: string
@@ -155,6 +158,13 @@ export interface SignOutRequestFailedAction {
   readonly type: SIGNOUT_REQUEST_FAILED
 }
 
+export interface SetHasVerificationBeenAttemptedAction {
+  readonly type: SET_HAS_VERIFICATION_BEEN_ATTEMPTED
+  readonly payload: {
+    readonly hasVerificationBeenAttempted: boolean
+  }
+}
+
 export type ReduxAction = RegistrationRequestSentAction
   | RegistrationRequestSucceededAction
   | RegistrationRequestFailedAction
@@ -167,6 +177,7 @@ export type ReduxAction = RegistrationRequestSentAction
   | SignOutRequestSentAction
   | SignOutRequestSucceededAction
   | SignOutRequestFailedAction
+  | SetHasVerificationBeenAttemptedAction
 
 export type ReduxAsyncAction = (input?: any) => (dispatch: Dispatch<{}>) => Promise<void>
 
