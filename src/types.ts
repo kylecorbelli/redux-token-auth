@@ -11,6 +11,7 @@ export interface UserAttributes {
 export interface User {
   readonly isSignedIn: boolean
   readonly isLoading: boolean
+  readonly hasVerificationBeenAttempted: boolean
   readonly attributes: UserAttributes
 }
 

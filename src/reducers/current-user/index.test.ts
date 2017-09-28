@@ -37,6 +37,7 @@ describe('currentUser', () => {
     },
     isLoading: true,
     isSignedIn: false,
+    hasVerificationBeenAttempted: false,
   }
 
   const loggedInUser: User = {
@@ -46,6 +47,7 @@ describe('currentUser', () => {
     },
     isLoading: false,
     isSignedIn: true,
+    hasVerificationBeenAttempted: false,
   }
 
   const loggedInUserWithRequestAlreadySent: User = {
@@ -72,6 +74,7 @@ describe('currentUser', () => {
         attributes: newUserAttributes,
         isLoading: false,
         isSignedIn: true,
+        hasVerificationBeenAttempted: false,
       }
       expect(newState).toEqual(expectedNewState)
     })
@@ -104,6 +107,7 @@ describe('currentUser', () => {
         attributes: newUserAttributes,
         isLoading: false,
         isSignedIn: true,
+        hasVerificationBeenAttempted: true,
       }
       expect(newState).toEqual(expectedNewState)
     })
@@ -119,6 +123,7 @@ describe('currentUser', () => {
       const newState: User = currentUser(loggedInState, action)
       expect(newState.isLoading).toBe(false)
       expect(newState.isSignedIn).toBe(false)
+      expect(newState.hasVerificationBeenAttempted).toBe(true)
     })
   })
 
@@ -141,6 +146,7 @@ describe('currentUser', () => {
         attributes: newUserAttributes,
         isLoading: false,
         isSignedIn: true,
+        hasVerificationBeenAttempted: false,
       }
       expect(newState).toEqual(expectedNewState)
     })
@@ -174,6 +180,7 @@ describe('currentUser', () => {
         },
         isLoading: false,
         isSignedIn: false,
+        hasVerificationBeenAttempted: false,
       }
       expect(newState).toEqual(expectedNewState)
     })

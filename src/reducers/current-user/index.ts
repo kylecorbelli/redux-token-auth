@@ -31,18 +31,30 @@ const currentUser = (state: User = initialUser, action: ReduxAction): User => {
         ...state,
         isLoading: true,
       }
-    case REGISTRATION_REQUEST_SUCCEEDED:
     case VERIFY_TOKEN_REQUEST_SUCCEEDED:
-    case SIGNIN_REQUEST_SUCCEEDED:
-      const { userAttributes } = action.payload
       return {
         ...state,
-        attributes: { ...userAttributes },
+        attributes: { ...action.payload.userAttributes },
+        isLoading: false,
+        isSignedIn: true,
+        hasVerificationBeenAttempted: true,
+      }
+    case REGISTRATION_REQUEST_SUCCEEDED:
+    case SIGNIN_REQUEST_SUCCEEDED:
+      return {
+        ...state,
+        attributes: { ...action.payload.userAttributes },
         isLoading: false,
         isSignedIn: true,
       }
-    case REGISTRATION_REQUEST_FAILED:
     case VERIFY_TOKEN_REQUEST_FAILED:
+      return {
+        ...state,
+        isLoading: false,
+        isSignedIn: false,
+        hasVerificationBeenAttempted: true,
+      }
+    case REGISTRATION_REQUEST_FAILED:
     case SIGNIN_REQUEST_FAILED:
       return {
         ...state,
