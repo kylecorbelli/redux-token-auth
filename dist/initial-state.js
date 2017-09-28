@@ -4,6 +4,7 @@ var initialState = {
     currentUser: {
         isSignedIn: false,
         isLoading: false,
+        hasVerificationBeenAttempted: false,
         attributes: {},
     },
 };
