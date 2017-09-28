@@ -14,6 +14,7 @@ import {
   SignOutRequestFailedAction,
   User,
   UserAttributes,
+  SetHasVerificationBeenAttemptedAction,
 } from '../../types'
 import {
   registrationRequestSent,
@@ -28,6 +29,7 @@ import {
   signOutRequestSent,
   signOutRequestSucceeded,
   signOutRequestFailed,
+  setHasVerificationBeenAttempted,
 } from '../../actions'
 
 describe('currentUser', () => {
@@ -37,6 +39,7 @@ describe('currentUser', () => {
     },
     isLoading: true,
     isSignedIn: false,
+    hasVerificationBeenAttempted: false,
   }
 
   const loggedInUser: User = {
@@ -46,6 +49,7 @@ describe('currentUser', () => {
     },
     isLoading: false,
     isSignedIn: true,
+    hasVerificationBeenAttempted: false,
   }
 
   const loggedInUserWithRequestAlreadySent: User = {
@@ -72,6 +76,7 @@ describe('currentUser', () => {
         attributes: newUserAttributes,
         isLoading: false,
         isSignedIn: true,
+        hasVerificationBeenAttempted: false,
       }
       expect(newState).toEqual(expectedNewState)
     })
@@ -104,6 +109,7 @@ describe('currentUser', () => {
         attributes: newUserAttributes,
         isLoading: false,
         isSignedIn: true,
+        hasVerificationBeenAttempted: true,
       }
       expect(newState).toEqual(expectedNewState)
     })
@@ -119,6 +125,7 @@ describe('currentUser', () => {
       const newState: User = currentUser(loggedInState, action)
       expect(newState.isLoading).toBe(false)
       expect(newState.isSignedIn).toBe(false)
+      expect(newState.hasVerificationBeenAttempted).toBe(true)
     })
   })
 
@@ -141,6 +148,7 @@ describe('currentUser', () => {
         attributes: newUserAttributes,
         isLoading: false,
         isSignedIn: true,
+        hasVerificationBeenAttempted: false,
       }
       expect(newState).toEqual(expectedNewState)
     })
@@ -174,6 +182,7 @@ describe('currentUser', () => {
         },
         isLoading: false,
         isSignedIn: false,
+        hasVerificationBeenAttempted: false,
       }
       expect(newState).toEqual(expectedNewState)
     })
@@ -188,6 +197,18 @@ describe('currentUser', () => {
         isLoading: false,
       }
       expect(newState).toEqual(expectedNewState)
+    })
+  })
+
+  describe('SET_HAS_VERIFICATION_BEEN_ATTEMPTED', () => {
+    it('sets hasVerificationBeenAttempted', () => {
+      const action: SetHasVerificationBeenAttemptedAction = setHasVerificationBeenAttempted(true)
+      const initialState: User = {
+        ...alreadyLoadingState,
+        hasVerificationBeenAttempted: false,
+      }
+      const newState: User = currentUser(alreadyLoadingState, action)
+      expect(newState.hasVerificationBeenAttempted).toBe(true)
     })
   })
 })

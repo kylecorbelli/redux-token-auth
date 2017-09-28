@@ -24,6 +24,7 @@ import {
   SIGNOUT_REQUEST_SENT,
   SIGNOUT_REQUEST_SUCCEEDED,
   SIGNOUT_REQUEST_FAILED,
+  SET_HAS_VERIFICATION_BEEN_ATTEMPTED,
   RegistrationRequestSentAction,
   RegistrationRequestSucceededAction,
   RegistrationRequestFailedAction,
@@ -36,6 +37,7 @@ import {
   SignOutRequestSentAction,
   SignOutRequestSucceededAction,
   SignOutRequestFailedAction,
+  SetHasVerificationBeenAttemptedAction,
 } from './types'
 import AsyncLocalStorage from './AsyncLocalStorage'
 import {
@@ -105,6 +107,15 @@ export const signOutRequestSucceeded = (): SignOutRequestSucceededAction => ({
 
 export const signOutRequestFailed = (): SignOutRequestFailedAction => ({
   type: SIGNOUT_REQUEST_FAILED,
+})
+
+export const setHasVerificationBeenAttempted = (
+  hasVerificationBeenAttempted: boolean
+): SetHasVerificationBeenAttemptedAction => ({
+  type: SET_HAS_VERIFICATION_BEEN_ATTEMPTED,
+  payload: {
+    hasVerificationBeenAttempted,
+  },
 })
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -231,6 +242,8 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
         uid: await Storage.getItem('uid') as string,
       }
       store.dispatch<any>(verifyToken(verificationParams))
+    } else {
+      store.dispatch(setHasVerificationBeenAttempted(true))
     }
   }
 

@@ -14,6 +14,7 @@ import {
   SIGNOUT_REQUEST_SENT,
   SIGNOUT_REQUEST_SUCCEEDED,
   SIGNOUT_REQUEST_FAILED,
+  SET_HAS_VERIFICATION_BEEN_ATTEMPTED,
 } from '../../types'
 import initialState from '../../initial-state'
 
@@ -31,18 +32,30 @@ const currentUser = (state: User = initialUser, action: ReduxAction): User => {
         ...state,
         isLoading: true,
       }
-    case REGISTRATION_REQUEST_SUCCEEDED:
     case VERIFY_TOKEN_REQUEST_SUCCEEDED:
-    case SIGNIN_REQUEST_SUCCEEDED:
-      const { userAttributes } = action.payload
       return {
         ...state,
-        attributes: { ...userAttributes },
+        attributes: { ...action.payload.userAttributes },
+        isLoading: false,
+        isSignedIn: true,
+        hasVerificationBeenAttempted: true,
+      }
+    case REGISTRATION_REQUEST_SUCCEEDED:
+    case SIGNIN_REQUEST_SUCCEEDED:
+      return {
+        ...state,
+        attributes: { ...action.payload.userAttributes },
         isLoading: false,
         isSignedIn: true,
       }
-    case REGISTRATION_REQUEST_FAILED:
     case VERIFY_TOKEN_REQUEST_FAILED:
+      return {
+        ...state,
+        isLoading: false,
+        isSignedIn: false,
+        hasVerificationBeenAttempted: true,
+      }
+    case REGISTRATION_REQUEST_FAILED:
     case SIGNIN_REQUEST_FAILED:
       return {
         ...state,
@@ -70,6 +83,11 @@ const currentUser = (state: User = initialUser, action: ReduxAction): User => {
       return {
         ...state,
         isLoading: false,
+      }
+    case SET_HAS_VERIFICATION_BEEN_ATTEMPTED:
+      return {
+        ...state,
+        hasVerificationBeenAttempted: action.payload.hasVerificationBeenAttempted,
       }
     default:
       return state
