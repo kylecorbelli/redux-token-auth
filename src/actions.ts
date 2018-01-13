@@ -4,6 +4,9 @@ import {
   Store,
 } from 'redux'
 import {
+  Platform
+} from "react-native"
+import {
   AuthResponse,
   DeviceStorage,
   VerificationParams,
@@ -40,6 +43,8 @@ import {
   SetHasVerificationBeenAttemptedAction,
 } from './types'
 import AsyncLocalStorage from './AsyncLocalStorage'
+import RNAsyncStorage from './RNAsyncStorage'
+
 import {
   deleteAuthHeaders,
   deleteAuthHeadersFromDeviceStorage,
@@ -130,7 +135,9 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
     userRegistrationAttributes,
   } = config
 
-  const Storage: DeviceStorage = Boolean(storage.flushGetRequests) ? storage : AsyncLocalStorage
+  const platformStorage = Platform.OS == 'web' ? AsyncLocalStorage : RNAsyncStorage
+
+  const Storage: DeviceStorage = Boolean(storage && storage.flushGetRequests) ? storage : platformStorage
 
   const registerUser = (
     userRegistrationDetails: UserRegistrationDetails,

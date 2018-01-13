@@ -37,8 +37,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
 var axios_1 = require("axios");
+var react_native_1 = require("react-native");
 var types_1 = require("./types");
 var AsyncLocalStorage_1 = require("./AsyncLocalStorage");
+var RNAsyncStorage_1 = require("./RNAsyncStorage");
 var auth_1 = require("./services/auth");
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Pure Redux actions:
@@ -99,7 +101,8 @@ exports.setHasVerificationBeenAttempted = function (hasVerificationBeenAttempted
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var generateAuthActions = function (config) {
     var authUrl = config.authUrl, storage = config.storage, userAttributes = config.userAttributes, userRegistrationAttributes = config.userRegistrationAttributes;
-    var Storage = Boolean(storage.flushGetRequests) ? storage : AsyncLocalStorage_1.default;
+    var platformStorage = react_native_1.Platform.OS == 'web' ? AsyncLocalStorage_1.default : RNAsyncStorage_1.default;
+    var Storage = Boolean(storage && storage.flushGetRequests) ? storage : platformStorage;
     var registerUser = function (userRegistrationDetails) { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
             var email, password, passwordConfirmation, data, response, userAttributesToSave, error_1;
