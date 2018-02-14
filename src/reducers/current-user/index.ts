@@ -41,6 +41,11 @@ const currentUser = (state: User = initialUser, action: ReduxAction): User => {
         hasVerificationBeenAttempted: true,
       }
     case REGISTRATION_REQUEST_SUCCEEDED:
+      return {
+        ...state,
+        attributes: { ...action.payload.userAttributes },
+        isLoading: false
+      }
     case SIGNIN_REQUEST_SUCCEEDED:
       return {
         ...state,

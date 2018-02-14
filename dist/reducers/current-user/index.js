@@ -22,6 +22,7 @@ var currentUser = function (state, action) {
         case types_1.VERIFY_TOKEN_REQUEST_SUCCEEDED:
             return __assign({}, state, { attributes: __assign({}, action.payload.userAttributes), isLoading: false, isSignedIn: true, hasVerificationBeenAttempted: true });
         case types_1.REGISTRATION_REQUEST_SUCCEEDED:
+            return __assign({}, state, { attributes: __assign({}, action.payload.userAttributes), isLoading: false });
         case types_1.SIGNIN_REQUEST_SUCCEEDED:
             return __assign({}, state, { attributes: __assign({}, action.payload.userAttributes), isLoading: false, isSignedIn: true });
         case types_1.VERIFY_TOKEN_REQUEST_FAILED:
