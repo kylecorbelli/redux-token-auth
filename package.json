@@ -1,6 +1,6 @@
 {
   "name": "redux-token-auth",
-  "version": "0.19.0",
+  "version": "0.19.1",
   "description": "Redux actions and reducers to integrate with Devise Token Auth",
   "main": "dist/index.js",
   "types": "index.d.ts",
