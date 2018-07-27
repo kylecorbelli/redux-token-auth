@@ -12,6 +12,7 @@ const generateRequireSignInWrapper = (
 ): RequireSignInWrapper => {
   const requireSignInWrapper = (PageComponent: ComponentClass): ComponentClass => {
     interface WrapperProps {
+      readonly hasVerificationBeenAttempted: boolean
       readonly isSignedIn: boolean
       readonly history: {
         readonly replace: (path: string) => void
@@ -19,22 +20,32 @@ const generateRequireSignInWrapper = (
     }
 
     class GatedPage extends React.Component<WrapperProps> {
-      public componentWillMount (): void {
+      public componentWillReceiveProps(nextProps: WrapperProps): void {
         const {
           history,
+          hasVerificationBeenAttempted,
           isSignedIn,
-        } = this.props
-        if (!isSignedIn) {
+        } = nextProps
+        if (hasVerificationBeenAttempted && !isSignedIn) {
           history.replace(redirectPathIfNotSignedIn)
         }
       }
 
       public render (): JSX.Element {
-        return <PageComponent {...this.props} />
+        const {
+          hasVerificationBeenAttempted,
+          isSignedIn,
+        } = this.props
+
+        return (hasVerificationBeenAttempted && isSignedIn) ?
+          <PageComponent {...this.props} />
+          :
+          <div></div>;
       }
     }
 
     const mapStateToProps = (state: ReduxState) => ({
+      hasVerificationBeenAttempted: state.reduxTokenAuth.currentUser.hasVerificationBeenAttempted,
       isSignedIn: state.reduxTokenAuth.currentUser.isSignedIn
     })
 
