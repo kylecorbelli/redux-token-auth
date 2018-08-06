@@ -51,7 +51,6 @@ import {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Pure Redux actions:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 export const registrationRequestSent = (): RegistrationRequestSentAction => ({
   type: REGISTRATION_REQUEST_SENT,
 })
@@ -121,7 +120,6 @@ export const setHasVerificationBeenAttempted = (
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Async Redux Thunk actions:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
   const {
     authUrl,
@@ -156,7 +154,7 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
         url: authUrl,
         data,
       })
-      setAuthHeaders(response.headers)
+      setAuthHeaders(Storage, response.headers)
       persistAuthHeadersInDeviceStorage(Storage, response.headers)
       const userAttributesToSave = getUserAttributesFromResponse(userAttributes, response)
       dispatch(registrationRequestSucceeded(userAttributesToSave))
@@ -176,7 +174,7 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
         url: `${authUrl}/validate_token`,
         params: verificationParams,
       })
-      setAuthHeaders(response.headers)
+      setAuthHeaders(Storage, response.headers)
       persistAuthHeadersInDeviceStorage(Storage, response.headers)
       const userAttributesToSave = getUserAttributesFromResponse(userAttributes, response)
       dispatch(verifyTokenRequestSucceeded(userAttributesToSave))
@@ -202,7 +200,7 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
           password,
         },
       })
-      setAuthHeaders(response.headers)
+      setAuthHeaders(Storage, response.headers)
       persistAuthHeadersInDeviceStorage(Storage, response.headers)
       const userAttributesToSave = getUserAttributesFromResponse(userAttributes, response)
       dispatch(signInRequestSucceeded(userAttributesToSave))
@@ -255,5 +253,4 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
     verifyCredentials,
   }
 }
-
 export default generateAuthActions

@@ -15,17 +15,23 @@ const authHeaderKeys: Array<string> = [
   'uid',
 ]
 
-export const setAuthHeaders = (headers: AuthHeaders): void => {
+export const setAuthHeaders = (Storage: DeviceStorage, headers: AuthHeaders): void => {
   authHeaderKeys.forEach((key: string) => {
-    axios.defaults.headers.common[key] = headers[key]
-  })
-}
+    Storage.getItem(key).then((fromStorage: string) => {
+      const value = headers[key] || fromStorage;
+      axios.defaults.headers.common[key] = value;
+    });
+  });
+};
 
 export const persistAuthHeadersInDeviceStorage = (Storage: DeviceStorage, headers: AuthHeaders): void => {
   authHeaderKeys.forEach((key: string) => {
-    Storage.setItem(key, headers[key])
-  })
-}
+    Storage.getItem(key).then((fromStorage: string) => {
+      const value = headers[key] || fromStorage;
+      Storage.setItem(key, value); // <--- Not really needed
+    });
+  });
+};
 
 export const deleteAuthHeaders = (): void => {
   authHeaderKeys.forEach((key: string) => {
