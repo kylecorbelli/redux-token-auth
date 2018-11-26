@@ -47,12 +47,18 @@ var authHeaderKeys = [
 ];
 exports.setAuthHeaders = function (headers) {
     authHeaderKeys.forEach(function (key) {
-        axios_1.default.defaults.headers.common[key] = headers[key];
+        // to handle empty token returned by devise_token_auth
+        if (headers[key]) {
+            axios_1.default.defaults.headers.common[key] = headers[key];
+        }
     });
 };
 exports.persistAuthHeadersInDeviceStorage = function (Storage, headers) {
     authHeaderKeys.forEach(function (key) {
-        Storage.setItem(key, headers[key]);
+        // to handle empty token returned by devise_token_auth
+        if (headers[key]) {
+            Storage.setItem(key, headers[key]);
+        }
     });
 };
 exports.deleteAuthHeaders = function () {
