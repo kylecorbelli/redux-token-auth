@@ -99,7 +99,7 @@ exports.setHasVerificationBeenAttempted = function (hasVerificationBeenAttempted
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var generateAuthActions = function (config) {
     var authUrl = config.authUrl, storage = config.storage, userAttributes = config.userAttributes, userRegistrationAttributes = config.userRegistrationAttributes;
-    var Storage = Boolean(storage.flushGetRequests) ? storage : AsyncLocalStorage_1.default;
+    var Storage = Boolean(storage && storage.flushGetRequests) ? storage : AsyncLocalStorage_1.default;
     var registerUser = function (userRegistrationDetails) { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
             var email, password, passwordConfirmation, data, response, userAttributesToSave, error_1;
@@ -172,24 +172,21 @@ var generateAuthActions = function (config) {
             });
         });
     }; };
+    // allow any params in userSignInCredentials in addition to email and password
     var signInUser = function (userSignInCredentials) { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
-            var email, password, response, userAttributesToSave, error_3;
+            var response, userAttributesToSave, error_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         dispatch(exports.signInRequestSent());
-                        email = userSignInCredentials.email, password = userSignInCredentials.password;
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
                         return [4 /*yield*/, axios_1.default({
                                 method: 'POST',
                                 url: authUrl + "/sign_in",
-                                data: {
-                                    email: email,
-                                    password: password,
-                                },
+                                data: userSignInCredentials,
                             })];
                     case 2:
                         response = _a.sent();

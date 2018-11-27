@@ -130,7 +130,7 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
     userRegistrationAttributes,
   } = config
 
-  const Storage: DeviceStorage = Boolean(storage.flushGetRequests) ? storage : AsyncLocalStorage
+  const Storage: DeviceStorage = Boolean(storage && storage.flushGetRequests) ? storage : AsyncLocalStorage
 
   const registerUser = (
     userRegistrationDetails: UserRegistrationDetails,
@@ -185,22 +185,16 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
     }
   }
 
+  // allow any params in userSignInCredentials in addition to email and password
   const signInUser = (
-    userSignInCredentials: UserSignInCredentials,
+    userSignInCredentials: any,
   ) => async function (dispatch: Dispatch<{}>): Promise<void> {
     dispatch(signInRequestSent())
-    const {
-      email,
-      password,
-    } = userSignInCredentials
     try {
       const response = await axios({
         method: 'POST',
         url: `${authUrl}/sign_in`,
-        data: {
-          email,
-          password,
-        },
+        data: userSignInCredentials,
       })
       setAuthHeaders(response.headers)
       persistAuthHeadersInDeviceStorage(Storage, response.headers)
