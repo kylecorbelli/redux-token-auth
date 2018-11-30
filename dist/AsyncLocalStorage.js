@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var react_native_1 = require("react-native");
+var async_storage_1 = require("@callstack/async-storage");
 var AsyncLocalStorage = {
     getItem: function (key) { return new Promise(function (resolve, reject) {
         if (window.localStorage) {
@@ -13,7 +13,7 @@ var AsyncLocalStorage = {
             }
         }
         else {
-            react_native_1.AsyncStorage.getItem(key).then(function (value) {
+            async_storage_1.default.getItem(key).then(function (value) {
                 resolve(value);
             }, reject);
         }
@@ -29,7 +29,7 @@ var AsyncLocalStorage = {
             }
         }
         else {
-            react_native_1.AsyncStorage.setItem(key, value).then(function () {
+            async_storage_1.default.setItem(key, value).then(function () {
                 resolve(value);
             }, reject);
         }
@@ -46,7 +46,7 @@ var AsyncLocalStorage = {
             }
         }
         else {
-            react_native_1.AsyncStorage.removeItem(key).then(function () {
+            async_storage_1.default.removeItem(key).then(function () {
                 resolve();
             }, reject);
         }
@@ -62,7 +62,7 @@ var AsyncLocalStorage = {
             }
         }
         else {
-            react_native_1.AsyncStorage.clear().then(function () {
+            async_storage_1.default.clear().then(function () {
                 resolve(true);
             }, reject);
         }
@@ -78,7 +78,7 @@ var AsyncLocalStorage = {
             }
         }
         else {
-            react_native_1.AsyncStorage.getAllKeys().then(function (allKeys) {
+            async_storage_1.default.getAllKeys().then(function (allKeys) {
                 resolve(allKeys);
             }, reject);
         }
@@ -94,7 +94,7 @@ var AsyncLocalStorage = {
             }
         }
         else {
-            react_native_1.AsyncStorage.multiGet(keys).then(function (values) {
+            async_storage_1.default.multiGet(keys).then(function (values) {
                 resolve(values);
             }, reject);
         }
@@ -111,7 +111,7 @@ var AsyncLocalStorage = {
             }
         }
         else {
-            react_native_1.AsyncStorage.multiSet(keyValuePairs).then(function () {
+            async_storage_1.default.multiSet(keyValuePairs).then(function () {
                 resolve();
             }, reject);
         }

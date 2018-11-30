@@ -1,4 +1,4 @@
-import { AsyncStorage } from "react-native"
+import AsyncStorage from '@callstack/async-storage'
 
 const AsyncLocalStorage = {
   getItem: (key: string): Promise<any> => new Promise((resolve, reject) => {

@@ -49,12 +49,13 @@
     "typescript": "^3.2.1"
   },
   "dependencies": {
+    "@callstack/async-storage": "^1.1.0",
     "@types/react": "^16.7.9",
     "@types/react-native": "^0.57.15",
     "@types/react-redux": "^6.0.10",
     "axios": "^0.18.0",
     "react": "^16.6.3",
-    "react-native": "^0.57.7",
+    "react-native-storage": "^1.0.0-beta.0",
     "react-redux": "^5.1.1",
     "redux": "^4.0.1"
   }

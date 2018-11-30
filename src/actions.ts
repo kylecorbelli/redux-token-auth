@@ -125,12 +125,11 @@ export const setHasVerificationBeenAttempted = (
 const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
   const {
     authUrl,
-    storage,
     userAttributes,
     userRegistrationAttributes,
   } = config
 
-  const Storage: DeviceStorage = Boolean(storage && storage.flushGetRequests) ? storage : AsyncLocalStorage
+  const Storage: DeviceStorage = AsyncLocalStorage
 
   const registerUser = (
     userRegistrationDetails: UserRegistrationDetails,
