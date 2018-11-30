@@ -54,6 +54,7 @@
     "@types/react-redux": "^6.0.10",
     "axios": "^0.18.0",
     "react": "^16.6.3",
+    "react-native": "^0.57.7",
     "react-redux": "^5.1.1",
     "redux": "^4.0.1"
   }
