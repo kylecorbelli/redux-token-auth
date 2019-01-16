@@ -234,6 +234,17 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
         client: await Storage.getItem('client') as string,
         uid: await Storage.getItem('uid') as string,
       }
+      // because of the shit (AsyncLocalStorage in react-native)
+      for (let key in verificationParams) {
+        let val = verificationParams[key]
+        let newVal: string
+        try {
+          newVal = JSON.parse(val).rawData
+        } catch (e) {
+          newVal = val
+        }
+        verificationParams[key] = newVal
+      }
       store.dispatch<any>(verifyToken(verificationParams))
     } else {
       store.dispatch(setHasVerificationBeenAttempted(true))

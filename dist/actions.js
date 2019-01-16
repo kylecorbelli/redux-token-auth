@@ -247,7 +247,7 @@ var generateAuthActions = function (config) {
         });
     }; };
     var verifyCredentials = function (store) { return __awaiter(_this, void 0, void 0, function () {
-        var verificationParams, _a, _b;
+        var verificationParams, _a, _b, key, val, newVal;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0: return [4 /*yield*/, Storage.getItem('access-token')];
@@ -265,6 +265,18 @@ var generateAuthActions = function (config) {
                 case 4:
                     verificationParams = (_a.uid = (_c.sent()),
                         _a);
+                    // because of the shit (AsyncLocalStorage in react-native)
+                    for (key in verificationParams) {
+                        val = verificationParams[key];
+                        newVal = void 0;
+                        try {
+                            newVal = JSON.parse(val).rawData;
+                        }
+                        catch (e) {
+                            newVal = val;
+                        }
+                        verificationParams[key] = newVal;
+                    }
                     store.dispatch(verifyToken(verificationParams));
                     return [3 /*break*/, 6];
                 case 5:
