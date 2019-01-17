@@ -15,7 +15,7 @@ const authHeaderKeys: Array<string> = [
   'uid',
 ]
 
-export const setAuthHeaders = (headers: AuthHeaders): void => {
+export const setAuthHeaders = (headers: any): void => {
   authHeaderKeys.forEach((key: string) => {
     // to handle empty token returned by devise_token_auth
     if (headers[key]) {

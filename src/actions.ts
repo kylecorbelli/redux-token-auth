@@ -168,6 +168,7 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
   const verifyToken = (
     verificationParams: VerificationParams,
   ) => async function (dispatch: Dispatch<{}>): Promise<void> {
+    setAuthHeaders(verificationParams)
     dispatch(verifyTokenRequestSent())
     try {
       const response = await axios({
@@ -176,6 +177,9 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
         params: verificationParams,
       })
       setAuthHeaders(response.headers)
+      // PROBLEM: access-token missing in subsequent request even though setAuthHeaders() here
+      // access-token may be empty after refresh, and also empty in response.headers here
+      // SOLUTION: setAuthHeaders() before verifyToken() in addition to after
       persistAuthHeadersInDeviceStorage(Storage, response.headers)
       const userAttributesToSave = getUserAttributesFromResponse(userAttributes, response)
       dispatch(verifyTokenRequestSucceeded(userAttributesToSave))

@@ -147,6 +147,7 @@ var generateAuthActions = function (config) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        auth_1.setAuthHeaders(verificationParams);
                         dispatch(exports.verifyTokenRequestSent());
                         _a.label = 1;
                     case 1:
@@ -159,6 +160,9 @@ var generateAuthActions = function (config) {
                     case 2:
                         response = _a.sent();
                         auth_1.setAuthHeaders(response.headers);
+                        // PROBLEM: access-token missing in subsequent request even though setAuthHeaders() here
+                        // access-token may be empty after refresh, and also empty in response.headers here
+                        // SOLUTION: setAuthHeaders() before verifyToken() in addition to after
                         auth_1.persistAuthHeadersInDeviceStorage(Storage, response.headers);
                         userAttributesToSave = auth_1.getUserAttributesFromResponse(userAttributes, response);
                         dispatch(exports.verifyTokenRequestSucceeded(userAttributesToSave));
