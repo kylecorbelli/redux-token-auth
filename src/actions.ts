@@ -174,7 +174,8 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
       const response = await axios({
         method: 'GET',
         url: `${authUrl}/validate_token`,
-        params: verificationParams,
+        // params: verificationParams,
+        // token in headers only, otherwise verification will fail when first-time login
       })
       setAuthHeaders(response.headers)
       // PROBLEM: access-token missing in subsequent request even though setAuthHeaders() here
