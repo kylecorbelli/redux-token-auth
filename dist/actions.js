@@ -155,7 +155,6 @@ var generateAuthActions = function (config) {
                         return [4 /*yield*/, axios_1.default({
                                 method: 'GET',
                                 url: authUrl + "/validate_token",
-                                params: verificationParams,
                             })];
                     case 2:
                         response = _a.sent();
