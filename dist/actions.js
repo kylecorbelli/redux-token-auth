@@ -94,6 +94,15 @@ exports.setHasVerificationBeenAttempted = function (hasVerificationBeenAttempted
         hasVerificationBeenAttempted: hasVerificationBeenAttempted,
     },
 }); };
+exports.resetPasswordRequestSent = function () { return ({
+    type: types_1.RESET_PASSWORD_REQUEST_SENT,
+}); };
+exports.resetPasswordRequestSucceeded = function () { return ({
+    type: types_1.RESET_PASSWORD_REQUEST_SUCCEEDED,
+}); };
+exports.resetPasswordRequestFailed = function () { return ({
+    type: types_1.RESET_PASSWORD_REQUEST_FAILED,
+}); };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Async Redux Thunk actions:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -277,12 +286,46 @@ var generateAuthActions = function (config) {
             }
         });
     }); };
+    var resetPassword = function (UserPasswordResetEmailAddress) { return function (dispatch) {
+        return __awaiter(this, void 0, void 0, function () {
+            var data, response, error_5;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        dispatch(exports.resetPasswordRequestSent());
+                        data = {
+                            email: UserPasswordResetEmailAddress,
+                            'redirect_url': 'https://localhost:3000/reset_url',
+                        };
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, axios_1.default({
+                                method: 'POST',
+                                url: authUrl + "/password",
+                                data: data
+                            })];
+                    case 2:
+                        response = _a.sent();
+                        console.log(response);
+                        dispatch(exports.resetPasswordRequestSucceeded());
+                        return [3 /*break*/, 4];
+                    case 3:
+                        error_5 = _a.sent();
+                        dispatch(exports.resetPasswordRequestFailed());
+                        return [3 /*break*/, 4];
+                    case 4: return [2 /*return*/];
+                }
+            });
+        });
+    }; };
     return {
         registerUser: registerUser,
         verifyToken: verifyToken,
         signInUser: signInUser,
         signOutUser: signOutUser,
         verifyCredentials: verifyCredentials,
+        resetPassword: resetPassword,
     };
 };
 exports.default = generateAuthActions;

@@ -15,6 +15,9 @@ import {
   SIGNOUT_REQUEST_SUCCEEDED,
   SIGNOUT_REQUEST_FAILED,
   SET_HAS_VERIFICATION_BEEN_ATTEMPTED,
+  RESET_PASSWORD_REQUEST_SENT,
+  RESET_PASSWORD_REQUEST_SUCCEEDED,
+  RESET_PASSWORD_REQUEST_FAILED,
 } from '../../types'
 import initialState from '../../initial-state'
 
@@ -24,6 +27,7 @@ const {
 
 const currentUser = (state: User = initialUser, action: ReduxAction): User => {
   switch (action.type) {
+    case RESET_PASSWORD_REQUEST_SENT:
     case REGISTRATION_REQUEST_SENT:
     case VERIFY_TOKEN_REQUEST_SENT:
     case SIGNIN_REQUEST_SENT:
@@ -56,6 +60,7 @@ const currentUser = (state: User = initialUser, action: ReduxAction): User => {
         hasVerificationBeenAttempted: true,
       }
     case REGISTRATION_REQUEST_FAILED:
+    case RESET_PASSWORD_REQUEST_FAILED:
     case SIGNIN_REQUEST_FAILED:
       return {
         ...state,
@@ -89,9 +94,14 @@ const currentUser = (state: User = initialUser, action: ReduxAction): User => {
         ...state,
         hasVerificationBeenAttempted: action.payload.hasVerificationBeenAttempted,
       }
+    case RESET_PASSWORD_REQUEST_SUCCEEDED:
+      return {
+        ...state,
+        isLoading: false,
+      }
     default:
       return state
   }
 }
 
-export default currentUser
+export default currentUser;

@@ -11,6 +11,7 @@ import {
   UserRegistrationDetails,
   UserSignInCredentials,
   UserSignOutCredentials,
+  UserPasswordResetEmailAddress,
   ActionsExport,
   REGISTRATION_REQUEST_SENT,
   REGISTRATION_REQUEST_SUCCEEDED,
@@ -25,6 +26,9 @@ import {
   SIGNOUT_REQUEST_SUCCEEDED,
   SIGNOUT_REQUEST_FAILED,
   SET_HAS_VERIFICATION_BEEN_ATTEMPTED,
+  RESET_PASSWORD_REQUEST_SENT,
+  RESET_PASSWORD_REQUEST_SUCCEEDED,
+  RESET_PASSWORD_REQUEST_FAILED,
   RegistrationRequestSentAction,
   RegistrationRequestSucceededAction,
   RegistrationRequestFailedAction,
@@ -38,6 +42,9 @@ import {
   SignOutRequestSucceededAction,
   SignOutRequestFailedAction,
   SetHasVerificationBeenAttemptedAction,
+  ResetPasswordRequestSentAction,
+  ResetPasswordRequestSucceededAction,
+  ResetPasswordRequestFailedAction,
 } from './types'
 import AsyncLocalStorage from './AsyncLocalStorage'
 import {
@@ -116,6 +123,18 @@ export const setHasVerificationBeenAttempted = (
   payload: {
     hasVerificationBeenAttempted,
   },
+})
+
+export const resetPasswordRequestSent = (): ResetPasswordRequestSentAction => ({
+  type: RESET_PASSWORD_REQUEST_SENT,
+})
+
+export const resetPasswordRequestSucceeded = (): ResetPasswordRequestSucceededAction => ({
+  type: RESET_PASSWORD_REQUEST_SUCCEEDED,
+})
+
+export const resetPasswordRequestFailed = (): ResetPasswordRequestFailedAction => ({
+  type: RESET_PASSWORD_REQUEST_FAILED,
 })
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -247,13 +266,35 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
     }
   }
 
+  const resetPassword = (
+      UserPasswordResetEmailAddress: UserPasswordResetEmailAddress,
+  ) => async function (dispatch: Dispatch<{}>): Promise<void> {
+    dispatch(resetPasswordRequestSent())
+    const data = {
+      email: UserPasswordResetEmailAddress,
+      'redirect_url': 'https://localhost:3000/reset_url',
+    }
+    try {
+      const response: AuthResponse = await axios({
+        method: 'POST',
+        url: `${authUrl}/password`,
+        data
+      })
+      console.log(response)
+      dispatch(resetPasswordRequestSucceeded())
+    } catch (error) {
+      dispatch(resetPasswordRequestFailed())
+    }
+  }
+
   return {
     registerUser,
     verifyToken,
     signInUser,
     signOutUser,
     verifyCredentials,
+    resetPassword,
   }
 }
 
-export default generateAuthActions
+export default generateAuthActions;
