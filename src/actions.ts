@@ -11,7 +11,7 @@ import {
   UserRegistrationDetails,
   UserSignInCredentials,
   UserSignOutCredentials,
-  UserPasswordResetEmailAddress,
+  UserPasswordResetDetails,
   ActionsExport,
   REGISTRATION_REQUEST_SENT,
   REGISTRATION_REQUEST_SUCCEEDED,
@@ -267,12 +267,13 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
   }
 
   const resetPassword = (
-      UserPasswordResetEmailAddress: UserPasswordResetEmailAddress,
+    UserPasswordResetDetails: UserPasswordResetDetails
   ) => async function (dispatch: Dispatch<{}>): Promise<void> {
     dispatch(resetPasswordRequestSent())
+    const  {email, url} = UserPasswordResetDetails
     const data = {
-      email: UserPasswordResetEmailAddress,
-      'redirect_url': 'https://localhost:3000/reset_url',
+      email: email,
+      'redirect_url': url,
     }
     try {
       const response: AuthResponse = await axios({

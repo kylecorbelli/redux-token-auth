@@ -110,8 +110,9 @@ export interface UserSignOutCredentials {
   readonly uid: string
 }
 
-export interface UserPasswordResetEmailAddress {
+export interface UserPasswordResetDetails {
   readonly email: string
+  readonly url: string
 }
 
 export interface RegistrationRequestSentAction {

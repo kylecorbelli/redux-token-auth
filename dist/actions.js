@@ -286,16 +286,17 @@ var generateAuthActions = function (config) {
             }
         });
     }); };
-    var resetPassword = function (UserPasswordResetEmailAddress) { return function (dispatch) {
+    var resetPassword = function (UserPasswordResetDetails) { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
-            var data, response, error_5;
+            var email, url, data, response, error_5;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         dispatch(exports.resetPasswordRequestSent());
+                        email = UserPasswordResetDetails.email, url = UserPasswordResetDetails.url;
                         data = {
-                            email: UserPasswordResetEmailAddress,
-                            'redirect_url': 'https://localhost:3000/reset_url',
+                            email: email,
+                            'redirect_url': url,
                         };
                         _a.label = 1;
                     case 1:
