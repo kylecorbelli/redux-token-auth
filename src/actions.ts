@@ -31,6 +31,9 @@ import {
   RESET_PASSWORD_REQUEST_SENT,
   RESET_PASSWORD_REQUEST_SUCCEEDED,
   RESET_PASSWORD_REQUEST_FAILED,
+  RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SENT,
+  RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SUCCEEDED,
+  RESET_PASSWORD_TEMP_SIGNIN_REQUEST_FAILED,
   CHANGE_PASSWORD_SENT,
   CHANGE_PASSWORD_SUCCEEDED,
   CHANGE_PASSWORD_FAILED,
@@ -53,6 +56,9 @@ import {
   ResetPasswordRequestSentAction,
   ResetPasswordRequestSucceededAction,
   ResetPasswordRequestFailedAction,
+  ResetPasswordTempSigninRequestSentAction,
+  ResetPasswordTempSigninRequestSucceededAction,
+  ResetPasswordTempSigninRequestFailedAction
 } from './types'
 import AsyncLocalStorage from './AsyncLocalStorage'
 import {
@@ -143,6 +149,19 @@ export const resetPasswordRequestSucceeded = (): ResetPasswordRequestSucceededAc
 
 export const resetPasswordRequestFailed = (): ResetPasswordRequestFailedAction => ({
   type: RESET_PASSWORD_REQUEST_FAILED,
+})
+
+
+export const resetPasswordTempSigninRequestSent = (): ResetPasswordTempSigninRequestSentAction => ({
+  type: RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SENT,
+})
+
+export const resetPasswordTempSigninRequestSucceeded = (): ResetPasswordTempSigninRequestSucceededAction => ({
+  type: RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SUCCEEDED,
+})
+
+export const resetPasswordTempSigninRequestFailed = (): ResetPasswordTempSigninRequestFailedAction => ({
+  type: RESET_PASSWORD_TEMP_SIGNIN_REQUEST_FAILED,
 })
 
 export const changePasswordSent = (): ChangePasswordSentAction => ({
@@ -304,10 +323,10 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
   const resetPasswordTempSignin = (
     authHeaders: AuthHeaders,
   ) => async function (dispatch: Dispatch<{}>): Promise<void> {
-    dispatch(resetPasswordRequestSent())
+    dispatch(resetPasswordTempSigninRequestSent())
     setAuthHeaders(authHeaders)
     persistAuthHeadersInDeviceStorage(Storage, authHeaders)
-    dispatch(resetPasswordRequestSucceeded())
+    dispatch(resetPasswordTempSigninRequestSucceeded())
   }
 
   const signOutUser = () => async function (dispatch: Dispatch<{}>): Promise<void> {
