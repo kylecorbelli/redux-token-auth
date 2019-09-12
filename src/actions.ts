@@ -270,6 +270,7 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
         }
       } catch (error) {
         console.log(error)
+        dispatch(changePasswordFailed(error.response.errors.toString()))
       }
     }
   }

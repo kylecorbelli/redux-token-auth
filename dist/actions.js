@@ -227,6 +227,7 @@ var generateAuthActions = function (config) {
                     case 8:
                         error_2 = _c.sent();
                         console.log(error_2);
+                        dispatch(exports.changePasswordFailed(error_2.response.errors.toString()));
                         return [3 /*break*/, 9];
                     case 9: return [2 /*return*/];
                 }
