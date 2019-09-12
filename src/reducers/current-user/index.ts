@@ -136,11 +136,14 @@ const currentUser = (state: User = initialUser, action: ReduxAction): User => {
         submissionError: '',
       }
     case CHANGE_PASSWORD_FAILED:
-    default:
       return {
         ...state,
         isSubmittingRequest: false,
         submissionError: action.payload.errorMessage
+      }
+    default:
+      return {
+        ...state
       }
   }
 }
