@@ -103,6 +103,18 @@ exports.resetPasswordRequestSucceeded = function () { return ({
 exports.resetPasswordRequestFailed = function () { return ({
     type: types_1.RESET_PASSWORD_REQUEST_FAILED,
 }); };
+exports.changePasswordSent = function () { return ({
+    type: types_1.CHANGE_PASSWORD_SENT,
+}); };
+exports.changePasswordSucceeded = function () { return ({
+    type: types_1.CHANGE_PASSWORD_SUCCEEDED,
+}); };
+exports.changePasswordFailed = function (errorMessage) { return ({
+    type: types_1.CHANGE_PASSWORD_FAILED,
+    payload: {
+        errorMessage: errorMessage
+    }
+}); };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Async Redux Thunk actions:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,9 +162,71 @@ var generateAuthActions = function (config) {
             });
         });
     }; };
+    var changePassword = function (newPassword) { return function (dispatch) {
+        return __awaiter(this, void 0, void 0, function () {
+            var password, passwordConfirmation, authToken, _a, _b, data, response, errorMessages, errorMessage, error_2;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        dispatch(exports.changePasswordSent());
+                        password = newPassword.password, passwordConfirmation = newPassword.passwordConfirmation;
+                        _a = {};
+                        _b = 'access-token';
+                        return [4 /*yield*/, Storage.getItem('access-token')];
+                    case 1:
+                        _a[_b] = (_c.sent());
+                        return [4 /*yield*/, Storage.getItem('client')];
+                    case 2:
+                        _a.client = (_c.sent());
+                        return [4 /*yield*/, Storage.getItem('uid')];
+                    case 3:
+                        authToken = (_a.uid = (_c.sent()),
+                            _a);
+                        if (!(password === '')) return [3 /*break*/, 4];
+                        dispatch(exports.changePasswordFailed('Password cannot be blank'));
+                        return [3 /*break*/, 9];
+                    case 4:
+                        if (!(password !== passwordConfirmation)) return [3 /*break*/, 5];
+                        dispatch(exports.changePasswordFailed('Passwords are not the same'));
+                        return [3 /*break*/, 9];
+                    case 5:
+                        if (!authToken) return [3 /*break*/, 9];
+                        data = {
+                            password: password,
+                            'password_confirmation': passwordConfirmation
+                        };
+                        _c.label = 6;
+                    case 6:
+                        _c.trys.push([6, 8, , 9]);
+                        return [4 /*yield*/, axios_1.default({
+                                method: 'PUT',
+                                url: authUrl + "/password",
+                                data: data,
+                                headers: authToken
+                            })];
+                    case 7:
+                        response = _c.sent();
+                        if (response.data['success'] === true) {
+                            dispatch(exports.changePasswordSucceeded());
+                        }
+                        else {
+                            errorMessages = response.data['errors'];
+                            errorMessage = errorMessages.toString();
+                            dispatch(exports.changePasswordFailed(errorMessage));
+                        }
+                        return [3 /*break*/, 9];
+                    case 8:
+                        error_2 = _c.sent();
+                        console.log(error_2);
+                        return [3 /*break*/, 9];
+                    case 9: return [2 /*return*/];
+                }
+            });
+        });
+    }; };
     var verifyToken = function (verificationParams) { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
-            var response, userAttributesToSave, error_2;
+            var response, userAttributesToSave, error_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -173,7 +247,7 @@ var generateAuthActions = function (config) {
                         dispatch(exports.verifyTokenRequestSucceeded(userAttributesToSave));
                         return [3 /*break*/, 4];
                     case 3:
-                        error_2 = _a.sent();
+                        error_3 = _a.sent();
                         dispatch(exports.verifyTokenRequestFailed());
                         return [3 /*break*/, 4];
                     case 4: return [2 /*return*/];
@@ -183,7 +257,7 @@ var generateAuthActions = function (config) {
     }; };
     var signInUser = function (userSignInCredentials) { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
-            var email, password, response, userAttributesToSave, error_3;
+            var email, password, response, userAttributesToSave, error_4;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -208,17 +282,28 @@ var generateAuthActions = function (config) {
                         dispatch(exports.signInRequestSucceeded(userAttributesToSave));
                         return [3 /*break*/, 4];
                     case 3:
-                        error_3 = _a.sent();
+                        error_4 = _a.sent();
                         dispatch(exports.signInRequestFailed());
-                        throw error_3;
+                        throw error_4;
                     case 4: return [2 /*return*/];
                 }
             });
         });
     }; };
+    var resetPasswordTempSignin = function (authHeaders) { return function (dispatch) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                dispatch(exports.resetPasswordRequestSent());
+                auth_1.setAuthHeaders(authHeaders);
+                auth_1.persistAuthHeadersInDeviceStorage(Storage, authHeaders);
+                dispatch(exports.resetPasswordRequestSucceeded());
+                return [2 /*return*/];
+            });
+        });
+    }; };
     var signOutUser = function () { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
-            var userSignOutCredentials, _a, _b, error_4;
+            var userSignOutCredentials, _a, _b, error_5;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -250,9 +335,9 @@ var generateAuthActions = function (config) {
                         dispatch(exports.signOutRequestSucceeded());
                         return [3 /*break*/, 7];
                     case 6:
-                        error_4 = _c.sent();
+                        error_5 = _c.sent();
                         dispatch(exports.signOutRequestFailed());
-                        throw error_4;
+                        throw error_5;
                     case 7: return [2 /*return*/];
                 }
             });
@@ -288,7 +373,7 @@ var generateAuthActions = function (config) {
     }); };
     var resetPassword = function (UserPasswordResetDetails) { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
-            var email, url, data, response, error_5;
+            var email, url, data, response, error_6;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -312,7 +397,7 @@ var generateAuthActions = function (config) {
                         dispatch(exports.resetPasswordRequestSucceeded());
                         return [3 /*break*/, 4];
                     case 3:
-                        error_5 = _a.sent();
+                        error_6 = _a.sent();
                         dispatch(exports.resetPasswordRequestFailed());
                         return [3 /*break*/, 4];
                     case 4: return [2 /*return*/];
@@ -327,6 +412,8 @@ var generateAuthActions = function (config) {
         signOutUser: signOutUser,
         verifyCredentials: verifyCredentials,
         resetPassword: resetPassword,
+        resetPasswordTempSignin: resetPasswordTempSignin,
+        changePassword: changePassword,
     };
 };
 exports.default = generateAuthActions;

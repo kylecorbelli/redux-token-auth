@@ -15,6 +15,8 @@ var currentUser = function (state, action) {
     if (state === void 0) { state = initialUser; }
     switch (action.type) {
         case types_1.RESET_PASSWORD_REQUEST_SENT:
+        case types_1.RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SENT:
+            return __assign({}, state, { isSubmittingRequest: true });
         case types_1.REGISTRATION_REQUEST_SENT:
         case types_1.VERIFY_TOKEN_REQUEST_SENT:
         case types_1.SIGNIN_REQUEST_SENT:
@@ -28,7 +30,6 @@ var currentUser = function (state, action) {
         case types_1.VERIFY_TOKEN_REQUEST_FAILED:
             return __assign({}, state, { isLoading: false, isSignedIn: false, hasVerificationBeenAttempted: true });
         case types_1.REGISTRATION_REQUEST_FAILED:
-        case types_1.RESET_PASSWORD_REQUEST_FAILED:
         case types_1.SIGNIN_REQUEST_FAILED:
             return __assign({}, state, { isLoading: false, isSignedIn: false });
         case types_1.SIGNOUT_REQUEST_SUCCEEDED:
@@ -38,14 +39,24 @@ var currentUser = function (state, action) {
                 var _a;
             }, {});
             return __assign({}, state, { attributes: allNullUserAttributes, isLoading: false, isSignedIn: false });
+        case types_1.RESET_PASSWORD_TEMP_SIGNIN_REQUEST_FAILED:
         case types_1.SIGNOUT_REQUEST_FAILED:
             return __assign({}, state, { isLoading: false });
         case types_1.SET_HAS_VERIFICATION_BEEN_ATTEMPTED:
             return __assign({}, state, { hasVerificationBeenAttempted: action.payload.hasVerificationBeenAttempted });
+        case types_1.RESET_PASSWORD_REQUEST_FAILED:
+            return __assign({}, state, { isSubmittingRequest: false, submissionError: "Reset Password Failed" });
+        case types_1.RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SUCCEEDED:
+            return __assign({}, state, { isLoading: false, isSignedIn: true });
         case types_1.RESET_PASSWORD_REQUEST_SUCCEEDED:
             return __assign({}, state, { isLoading: false });
+        case types_1.CHANGE_PASSWORD_SENT:
+            return __assign({}, state, { isSubmittingRequest: true, submissionError: '' });
+        case types_1.CHANGE_PASSWORD_SUCCEEDED:
+            return __assign({}, state, { isSubmittingRequest: false, submissionError: '' });
+        case types_1.CHANGE_PASSWORD_FAILED:
         default:
-            return state;
+            return __assign({}, state, { isSubmittingRequest: false, submissionError: action.payload.errorMessage });
     }
 };
 exports.default = currentUser;

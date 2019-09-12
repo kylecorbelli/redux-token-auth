@@ -18,6 +18,12 @@ import {
   RESET_PASSWORD_REQUEST_SENT,
   RESET_PASSWORD_REQUEST_SUCCEEDED,
   RESET_PASSWORD_REQUEST_FAILED,
+  RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SENT,
+  RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SUCCEEDED,
+  RESET_PASSWORD_TEMP_SIGNIN_REQUEST_FAILED,
+  CHANGE_PASSWORD_SENT,
+  CHANGE_PASSWORD_SUCCEEDED,
+  CHANGE_PASSWORD_FAILED,
 } from '../../types'
 import initialState from '../../initial-state'
 
@@ -28,6 +34,11 @@ const {
 const currentUser = (state: User = initialUser, action: ReduxAction): User => {
   switch (action.type) {
     case RESET_PASSWORD_REQUEST_SENT:
+    case RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SENT:
+      return {
+        ...state,
+        isSubmittingRequest: true,
+      }
     case REGISTRATION_REQUEST_SENT:
     case VERIFY_TOKEN_REQUEST_SENT:
     case SIGNIN_REQUEST_SENT:
@@ -60,7 +71,6 @@ const currentUser = (state: User = initialUser, action: ReduxAction): User => {
         hasVerificationBeenAttempted: true,
       }
     case REGISTRATION_REQUEST_FAILED:
-    case RESET_PASSWORD_REQUEST_FAILED:
     case SIGNIN_REQUEST_FAILED:
       return {
         ...state,
@@ -84,6 +94,7 @@ const currentUser = (state: User = initialUser, action: ReduxAction): User => {
         isLoading: false,
         isSignedIn: false,
       }
+    case RESET_PASSWORD_TEMP_SIGNIN_REQUEST_FAILED:
     case SIGNOUT_REQUEST_FAILED:
       return {
         ...state,
@@ -94,13 +105,43 @@ const currentUser = (state: User = initialUser, action: ReduxAction): User => {
         ...state,
         hasVerificationBeenAttempted: action.payload.hasVerificationBeenAttempted,
       }
+    case RESET_PASSWORD_REQUEST_FAILED:
+      return {
+        ...state,
+        isSubmittingRequest: false,
+        submissionError: "Reset Password Failed"
+      }
+    case RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SUCCEEDED:
+      return {
+        ...state,
+        isLoading: false,
+        isSignedIn: true
+      }
     case RESET_PASSWORD_REQUEST_SUCCEEDED:
       return {
         ...state,
         isLoading: false,
       }
+    
+    case CHANGE_PASSWORD_SENT:
+      return {
+        ...state,
+        isSubmittingRequest: true,
+        submissionError: '',
+      }
+    case CHANGE_PASSWORD_SUCCEEDED:
+      return {
+        ...state,
+        isSubmittingRequest: false,
+        submissionError: '',
+      }
+    case CHANGE_PASSWORD_FAILED:
     default:
-      return state
+      return {
+        ...state,
+        isSubmittingRequest: false,
+        submissionError: action.payload.errorMessage
+      }
   }
 }
 

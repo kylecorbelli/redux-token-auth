@@ -11,6 +11,8 @@ export interface UserAttributes {
 export interface User {
   readonly isSignedIn: boolean
   readonly isLoading: boolean
+  readonly isSubmittingRequest: boolean
+  readonly submissionError: string
   readonly hasVerificationBeenAttempted: boolean
   readonly attributes: UserAttributes
 }
@@ -92,11 +94,31 @@ export const RESET_PASSWORD_REQUEST_SUCCEEDED: RESET_PASSWORD_REQUEST_SUCCEEDED 
 export type RESET_PASSWORD_REQUEST_FAILED = 'redux-token-auth/RESET_PASSWORD_REQUEST_FAILED'
 export const RESET_PASSWORD_REQUEST_FAILED: RESET_PASSWORD_REQUEST_FAILED = 'redux-token-auth/RESET_PASSWORD_REQUEST_FAILED'
 
+export type RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SENT = 'redux-token-auth/RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SENT'
+export const RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SENT: RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SENT = 'redux-token-auth/RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SENT'
+export type RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SUCCEEDED = 'redux-token-auth/  RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SUCCEEDED'
+export const   RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SUCCEEDED:   RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SUCCEEDED = 'redux-token-auth/  RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SUCCEEDED'
+export type RESET_PASSWORD_TEMP_SIGNIN_REQUEST_FAILED = 'redux-token-auth/  RESET_PASSWORD_TEMP_SIGNIN_REQUEST_FAILED'
+export const   RESET_PASSWORD_TEMP_SIGNIN_REQUEST_FAILED:   RESET_PASSWORD_TEMP_SIGNIN_REQUEST_FAILED = 'redux-token-auth/  RESET_PASSWORD_TEMP_SIGNIN_REQUEST_FAILED'
+
+export type CHANGE_PASSWORD_SENT = 'redux-token-auth/CHANGE_PASSWORD_SENT'
+export const CHANGE_PASSWORD_SENT: CHANGE_PASSWORD_SENT = 'redux-token-auth/CHANGE_PASSWORD_SENT'
+export type CHANGE_PASSWORD_SUCCEEDED = 'redux-token-auth/CHANGE_PASSWORD_SUCCEEDED'
+export const CHANGE_PASSWORD_SUCCEEDED: CHANGE_PASSWORD_SUCCEEDED = 'redux-token-auth/CHANGE_PASSWORD_SUCCEEDED'
+export type CHANGE_PASSWORD_FAILED = 'redux-token-auth/CHANGE_PASSWORD_FAILED'
+export const CHANGE_PASSWORD_FAILED: CHANGE_PASSWORD_FAILED = 'redux-token-auth/CHANGE_PASSWORD_FAILED'
+
+
 export interface UserRegistrationDetails {
   readonly email: string
   readonly password: string
   readonly passwordConfirmation: string
   readonly [key: string]: any
+}
+
+export interface NewPassword {
+  readonly password: string
+  readonly passwordConfirmation: string
 }
 
 export interface UserSignInCredentials {
@@ -113,6 +135,12 @@ export interface UserSignOutCredentials {
 export interface UserPasswordResetDetails {
   readonly email: string
   readonly url: string
+}
+
+export interface UserPasswordResetTempLoginDetails {
+  readonly uid: string
+  readonly accessToken: string
+  readonly client: string
 }
 
 export interface RegistrationRequestSentAction {
@@ -179,6 +207,21 @@ export interface SetHasVerificationBeenAttemptedAction {
   }
 }
 
+export interface ChangePasswordSentAction {
+  readonly type: CHANGE_PASSWORD_SENT
+}
+
+export interface ChangePasswordSucceededAction {
+  readonly type: CHANGE_PASSWORD_SUCCEEDED
+}
+
+export interface ChangePasswordFailedAction {
+  readonly type: CHANGE_PASSWORD_FAILED
+  readonly payload: {
+    readonly errorMessage: string
+  }
+}
+
 export interface ResetPasswordRequestSentAction {
   readonly type: RESET_PASSWORD_REQUEST_SENT
 }
@@ -189,6 +232,18 @@ export interface ResetPasswordRequestSucceededAction {
 
 export interface ResetPasswordRequestFailedAction {
   readonly type: RESET_PASSWORD_REQUEST_FAILED
+}
+
+export interface ResetPasswordTempSigninRequestSentAction {
+  readonly type: RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SENT
+}
+
+export interface ResetPasswordTempSigninRequestSucceededAction {
+  readonly type: RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SUCCEEDED
+}
+
+export interface ResetPasswordTempSigninRequestFailedAction {
+  readonly type: RESET_PASSWORD_TEMP_SIGNIN_REQUEST_FAILED
 }
 
 export type ReduxAction = RegistrationRequestSentAction
@@ -207,6 +262,12 @@ export type ReduxAction = RegistrationRequestSentAction
   | ResetPasswordRequestSentAction
   | ResetPasswordRequestSucceededAction
   | ResetPasswordRequestFailedAction
+  | ResetPasswordTempSigninRequestSentAction
+  | ResetPasswordTempSigninRequestSucceededAction
+  | ResetPasswordTempSigninRequestFailedAction
+  | ChangePasswordSentAction
+  | ChangePasswordSucceededAction
+  | ChangePasswordFailedAction
 
 export type ReduxAsyncAction = (input?: any) => (dispatch: Dispatch<{}>) => Promise<void>
 
@@ -219,6 +280,8 @@ export interface ActionsExport {
   readonly signOutUser: ReduxAsyncAction
   readonly verifyCredentials: VerifyCredentialsFunction
   readonly resetPassword: ReduxAsyncAction
+  readonly resetPasswordTempSignin: ReduxAsyncAction
+  readonly changePassword: ReduxAsyncAction
 }
 
 export type ActionsGeneratorExport = (config: { [key: string]: any }) => ActionsExport
