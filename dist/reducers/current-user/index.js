@@ -55,8 +55,9 @@ var currentUser = function (state, action) {
         case types_1.CHANGE_PASSWORD_SUCCEEDED:
             return __assign({}, state, { isSubmittingRequest: false, submissionError: '' });
         case types_1.CHANGE_PASSWORD_FAILED:
-        default:
             return __assign({}, state, { isSubmittingRequest: false, submissionError: action.payload.errorMessage });
+        default:
+            return __assign({}, state);
     }
 };
 exports.default = currentUser;
