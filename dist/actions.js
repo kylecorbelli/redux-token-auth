@@ -103,6 +103,15 @@ exports.resetPasswordRequestSucceeded = function () { return ({
 exports.resetPasswordRequestFailed = function () { return ({
     type: types_1.RESET_PASSWORD_REQUEST_FAILED,
 }); };
+exports.resetPasswordTempSigninRequestSent = function () { return ({
+    type: types_1.RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SENT,
+}); };
+exports.resetPasswordTempSigninRequestSucceeded = function () { return ({
+    type: types_1.RESET_PASSWORD_TEMP_SIGNIN_REQUEST_SUCCEEDED,
+}); };
+exports.resetPasswordTempSigninRequestFailed = function () { return ({
+    type: types_1.RESET_PASSWORD_TEMP_SIGNIN_REQUEST_FAILED,
+}); };
 exports.changePasswordSent = function () { return ({
     type: types_1.CHANGE_PASSWORD_SENT,
 }); };
@@ -293,10 +302,10 @@ var generateAuthActions = function (config) {
     var resetPasswordTempSignin = function (authHeaders) { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                dispatch(exports.resetPasswordRequestSent());
+                dispatch(exports.resetPasswordTempSigninRequestSent());
                 auth_1.setAuthHeaders(authHeaders);
                 auth_1.persistAuthHeadersInDeviceStorage(Storage, authHeaders);
-                dispatch(exports.resetPasswordRequestSucceeded());
+                dispatch(exports.resetPasswordTempSigninRequestSucceeded());
                 return [2 /*return*/];
             });
         });
