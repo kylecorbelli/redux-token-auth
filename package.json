@@ -39,7 +39,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^20.0.8",
-    "codecov": "^2.3.0",
+    "codecov": "^3.6.5",
     "jest": "^21.0.0",
     "ts-jest": "^21.0.1",
     "typescript": "^2.5.2"
