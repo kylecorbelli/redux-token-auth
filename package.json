@@ -40,7 +40,6 @@
   "devDependencies": {
     "@types/jest": "^26.0.7",
     "@types/react": "^16.9.43",
-    "@types/react-native": "^0.63.2",
     "@types/react-redux": "^7.1.9",
     "codecov": "^3.7.2",
     "jest": "^26.1.0",
