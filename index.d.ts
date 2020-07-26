@@ -2,10 +2,10 @@ import { Reducer } from 'redux'
 import {GenerateAuthActions} from './src/actions'
 import {GenerateRequireSignInWrapper} from './src/generate-require-signin-wrapper'
 import {
-  ReduxState,
+  ReduxTokenAuthState,
 } from './src/types'
 
-export const reduxTokenAuthReducer: Reducer<ReduxState>
+export const reduxTokenAuthReducer: Reducer<ReduxTokenAuthState>
 
 export const generateAuthActions: GenerateAuthActions
 
