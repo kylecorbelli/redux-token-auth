@@ -220,3 +220,9 @@ export interface DeviceStorage {
   readonly multiGet: (keys: string[]) => Promise<any>
   readonly multiSet: (keyValuePairs: string[][]) => Promise<any>
 }
+
+export interface GenerateAuthActionsConfig {
+  authUrl: string
+  userAttributes: {[key: string]: any}
+  userRegistrationAttributes: {[key: string]: any}
+}

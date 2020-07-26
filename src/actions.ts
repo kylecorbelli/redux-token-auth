@@ -37,6 +37,7 @@ import {
   SignOutRequestFailedAction,
   SetHasVerificationBeenAttemptedAction,
   AppThunk,
+  GenerateAuthActionsConfig,
 } from './types'
 import AsyncLocalStorage from './AsyncLocalStorage'
 import {
@@ -121,15 +122,14 @@ export const setHasVerificationBeenAttempted = (
 // Async Redux Thunk actions:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const generateAuthActions = (config: { [key: string]: any }) => {
+const generateAuthActions = (config: GenerateAuthActionsConfig) => {
   const {
     authUrl,
-    storage,
     userAttributes,
     userRegistrationAttributes,
   } = config
 
-  const Storage: DeviceStorage = Boolean(storage.flushGetRequests) ? storage : AsyncLocalStorage
+  const Storage: DeviceStorage = AsyncLocalStorage
 
   const registerUser = (
     userRegistrationDetails: UserRegistrationDetails,
