@@ -1,8 +1,8 @@
-import { ComponentClass } from 'react'
 import {
-  Dispatch,
   Store,
+  Action
 } from 'redux'
+import { ThunkAction } from 'redux-thunk'
 
 export interface UserAttributes {
   [key: string]: string | number | null
@@ -179,7 +179,15 @@ export type ReduxAction = RegistrationRequestSentAction
   | SignOutRequestFailedAction
   | SetHasVerificationBeenAttemptedAction
 
-export type ReduxAsyncAction = (input?: any) => (dispatch: Dispatch<{}>) => Promise<void>
+
+export type AppThunk<ReturnType = Promise<void>> = ThunkAction<
+  ReturnType,
+  ReduxState,
+  unknown,
+  Action<string>
+>
+
+export type ReduxAsyncAction = (input?: any) => AppThunk
 
 export type VerifyCredentialsFunction = (store: Store<{}>) => void
 
@@ -201,7 +209,7 @@ export interface GenerateRequireSignInWrapperConfig {
   readonly redirectPathIfNotSignedIn: string
 }
 
-export type RequireSignInWrapper = (PageComponent: ComponentClass) => ComponentClass
+// export type RequireSignInWrapper = (PageComponent: ComponentClass) => ComponentClass
 
 export interface DeviceStorage {
   readonly getItem: (key: string) => Promise<any>

@@ -1,12 +1,12 @@
 import { Reducer } from 'redux'
+import {GenerateAuthActions} from './src/actions'
+import {GenerateRequireSignInWrapper} from './src/generate-require-signin-wrapper'
 import {
-  ActionsGeneratorExport,
-  GenerateRequireSignInWrapperConfig,
-  RequireSignInWrapper,
+  ReduxState,
 } from './src/types'
 
-export const reduxTokenAuthReducer: Reducer<{}>
+export const reduxTokenAuthReducer: Reducer<ReduxState>
 
-export const generateAuthActions: ActionsGeneratorExport
+export const generateAuthActions: GenerateAuthActions
 
-export const generateRequireSignInWrapper: (config: GenerateRequireSignInWrapperConfig) => RequireSignInWrapper
+export const generateRequireSignInWrapper: GenerateRequireSignInWrapper

@@ -1,6 +1,5 @@
 import axios from 'axios'
 import {
-  Dispatch,
   Store,
 } from 'redux'
 import {
@@ -11,7 +10,6 @@ import {
   UserRegistrationDetails,
   UserSignInCredentials,
   UserSignOutCredentials,
-  ActionsExport,
   REGISTRATION_REQUEST_SENT,
   REGISTRATION_REQUEST_SUCCEEDED,
   REGISTRATION_REQUEST_FAILED,
@@ -38,6 +36,7 @@ import {
   SignOutRequestSucceededAction,
   SignOutRequestFailedAction,
   SetHasVerificationBeenAttemptedAction,
+  AppThunk,
 } from './types'
 import AsyncLocalStorage from './AsyncLocalStorage'
 import {
@@ -122,7 +121,7 @@ export const setHasVerificationBeenAttempted = (
 // Async Redux Thunk actions:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
+const generateAuthActions = (config: { [key: string]: any }) => {
   const {
     authUrl,
     storage,
@@ -134,7 +133,7 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
 
   const registerUser = (
     userRegistrationDetails: UserRegistrationDetails,
-  ) => async function (dispatch: Dispatch<{}>): Promise<void> {
+  ): AppThunk => async function (dispatch) {
     dispatch(registrationRequestSent())
     const {
       email,
@@ -168,7 +167,7 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
 
   const verifyToken = (
     verificationParams: VerificationParams,
-  ) => async function (dispatch: Dispatch<{}>): Promise<void> {
+  ): AppThunk => async function (dispatch) {
     dispatch(verifyTokenRequestSent())
     try {
       const response = await axios({
@@ -187,7 +186,7 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
 
   const signInUser = (
     userSignInCredentials: UserSignInCredentials,
-  ) => async function (dispatch: Dispatch<{}>): Promise<void> {
+  ): AppThunk => async function (dispatch) {
     dispatch(signInRequestSent())
     const {
       email,
@@ -212,7 +211,7 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
     }
   }
 
-  const signOutUser = () => async function (dispatch: Dispatch<{}>): Promise<void> {
+  const signOutUser = (): AppThunk => async function (dispatch) {
     const userSignOutCredentials: UserSignOutCredentials = {
       'access-token': await Storage.getItem('access-token') as string,
       client: await Storage.getItem('client') as string,
@@ -257,3 +256,4 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
 }
 
 export default generateAuthActions
+export type GenerateAuthActions = typeof generateAuthActions
