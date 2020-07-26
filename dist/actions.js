@@ -1,9 +1,10 @@
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -14,8 +15,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
         while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
                 case 0: case 1: t = op; break;
                 case 4: _.label++; return { value: op[1], done: false };
@@ -34,8 +35,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.setHasVerificationBeenAttempted = exports.signOutRequestFailed = exports.signOutRequestSucceeded = exports.signOutRequestSent = exports.signInRequestFailed = exports.signInRequestSucceeded = exports.signInRequestSent = exports.verifyTokenRequestFailed = exports.verifyTokenRequestSucceeded = exports.verifyTokenRequestSent = exports.registrationRequestFailed = exports.registrationRequestSucceeded = exports.registrationRequestSent = void 0;
 var axios_1 = require("axios");
 var types_1 = require("./types");
 var AsyncLocalStorage_1 = require("./AsyncLocalStorage");
@@ -249,7 +250,7 @@ var generateAuthActions = function (config) {
             });
         });
     }; };
-    var verifyCredentials = function (store) { return __awaiter(_this, void 0, void 0, function () {
+    var verifyCredentials = function (store) { return __awaiter(void 0, void 0, void 0, function () {
         var verificationParams, _a, _b;
         return __generator(this, function (_c) {
             switch (_c.label) {
