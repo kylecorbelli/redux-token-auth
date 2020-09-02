@@ -27,9 +27,15 @@ Additionally, a helper function is provided to verify the current user's auth to
 Finally, `redux-token-auth` provides a component wrapper that will gate your specified page components if the user is not signed in This is to prevent unauthorized users from accessing particular pages in your app. <a href="https://github.com/ReactTraining/react-router">React Router v4.0.0+</a> is required for this to work properly.
 
 ## Installation
-`npm install --save redux-token-auth`
+```
+npm install --save redux-token-auth
+```
 
-Have you ever installed an NPM module any other way?
+or if your project uses Yarn,
+
+```
+yarn add redux-token-auth
+```
 
 ## Dependencies
 Your project will need the popular <a href="https://github.com/gaearon/redux-thunk" target="_blank">Redux Thunk</a> middleware (written by none other than the man, the myth, the legend Dan Abramov himself) in order to function properly.
