@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.invertMapKeysAndValues = void 0;
 exports.invertMapKeysAndValues = function (stringMap) {
     var newStringMap = {};
     for (var key in stringMap) {
