@@ -128,6 +128,10 @@ const config = {
   userRegistrationAttributes: {
     firstName: 'first_name',
   },
+  // Needed to prevent redirects when logged-in users manually enter urls
+  storage: {
+    flushGetRequests: false,
+  },
 }
 
 const {
