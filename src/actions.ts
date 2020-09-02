@@ -172,7 +172,7 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
     dispatch(verifyTokenRequestSent())
     try {
       const response = await axios({
-        method: 'GET',
+        method: 'POST',
         url: `${authUrl}/validate_token`,
         params: verificationParams,
       })
