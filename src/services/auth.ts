@@ -15,15 +15,21 @@ const authHeaderKeys: Array<string> = [
   'uid',
 ]
 
-export const setAuthHeaders = (headers: AuthHeaders): void => {
+export const setAuthHeaders = (headers: any): void => {
   authHeaderKeys.forEach((key: string) => {
-    axios.defaults.headers.common[key] = headers[key]
+    // to handle empty token returned by devise_token_auth
+    if (headers[key]) {
+      axios.defaults.headers.common[key] = headers[key]
+    }
   })
 }
 
 export const persistAuthHeadersInDeviceStorage = (Storage: DeviceStorage, headers: AuthHeaders): void => {
   authHeaderKeys.forEach((key: string) => {
-    Storage.setItem(key, headers[key])
+    // to handle empty token returned by devise_token_auth
+    if (headers[key]) {
+      Storage.setItem(key, headers[key])
+    }
   })
 }
 

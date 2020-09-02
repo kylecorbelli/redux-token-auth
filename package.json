@@ -7,7 +7,11 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
-    "build": "tsc"
+    "build": "node_modules/typescript/bin/tsc",
+    "watch": "npm-watch"
+  },
+  "watch": {
+    "build": "{src,test}/"
   },
   "repository": {
     "type": "git",
@@ -38,19 +42,21 @@
   "author": "Kyle Corbelli",
   "license": "MIT",
   "devDependencies": {
-    "@types/jest": "^20.0.8",
-    "codecov": "^2.3.0",
-    "jest": "^21.0.0",
-    "ts-jest": "^21.0.1",
-    "typescript": "^2.5.2"
+    "@types/jest": "^23.3.10",
+    "codecov": "^3.1.0",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.5",
+    "typescript": "^3.2.1"
   },
   "dependencies": {
-    "@types/react": "^16.0.5",
-    "@types/react-native": "^0.48.7",
-    "@types/react-redux": "^5.0.9",
-    "axios": "^0.16.2",
-    "react": "^15.6.1",
-    "react-redux": "^5.0.6",
-    "redux": "^3.7.2"
+    "@callstack/async-storage": "^1.1.0",
+    "@types/react": "^16.7.9",
+    "@types/react-native": "^0.57.15",
+    "@types/react-redux": "^6.0.10",
+    "axios": "^0.18.0",
+    "react": "^16.6.3",
+    "react-native-storage": "^1.0.0-beta.0",
+    "react-redux": "^5.1.1",
+    "redux": "^4.0.1"
   }
 }

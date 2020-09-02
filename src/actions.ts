@@ -125,12 +125,11 @@ export const setHasVerificationBeenAttempted = (
 const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
   const {
     authUrl,
-    storage,
     userAttributes,
     userRegistrationAttributes,
   } = config
 
-  const Storage: DeviceStorage = Boolean(storage.flushGetRequests) ? storage : AsyncLocalStorage
+  const Storage: DeviceStorage = AsyncLocalStorage
 
   const registerUser = (
     userRegistrationDetails: UserRegistrationDetails,
@@ -169,14 +168,19 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
   const verifyToken = (
     verificationParams: VerificationParams,
   ) => async function (dispatch: Dispatch<{}>): Promise<void> {
+    setAuthHeaders(verificationParams)
     dispatch(verifyTokenRequestSent())
     try {
       const response = await axios({
         method: 'GET',
         url: `${authUrl}/validate_token`,
-        params: verificationParams,
+        // params: verificationParams,
+        // token in headers only, otherwise verification will fail when first-time login
       })
       setAuthHeaders(response.headers)
+      // PROBLEM: access-token missing in subsequent request even though setAuthHeaders() here
+      // access-token may be empty after refresh, and also empty in response.headers here
+      // SOLUTION: setAuthHeaders() before verifyToken() in addition to after
       persistAuthHeadersInDeviceStorage(Storage, response.headers)
       const userAttributesToSave = getUserAttributesFromResponse(userAttributes, response)
       dispatch(verifyTokenRequestSucceeded(userAttributesToSave))
@@ -185,22 +189,16 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
     }
   }
 
+  // allow any params in userSignInCredentials in addition to email and password
   const signInUser = (
-    userSignInCredentials: UserSignInCredentials,
+    userSignInCredentials: any,
   ) => async function (dispatch: Dispatch<{}>): Promise<void> {
     dispatch(signInRequestSent())
-    const {
-      email,
-      password,
-    } = userSignInCredentials
     try {
       const response = await axios({
         method: 'POST',
         url: `${authUrl}/sign_in`,
-        data: {
-          email,
-          password,
-        },
+        data: userSignInCredentials,
       })
       setAuthHeaders(response.headers)
       persistAuthHeadersInDeviceStorage(Storage, response.headers)
@@ -240,6 +238,17 @@ const generateAuthActions = (config: { [key: string]: any }): ActionsExport => {
         'access-token': await Storage.getItem('access-token') as string,
         client: await Storage.getItem('client') as string,
         uid: await Storage.getItem('uid') as string,
+      }
+      // because of the shit (AsyncLocalStorage in react-native)
+      for (let key in verificationParams) {
+        let val = verificationParams[key]
+        let newVal: string
+        try {
+          newVal = JSON.parse(val).rawData
+        } catch (e) {
+          newVal = val
+        }
+        verificationParams[key] = newVal
       }
       store.dispatch<any>(verifyToken(verificationParams))
     } else {

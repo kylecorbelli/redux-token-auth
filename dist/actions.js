@@ -14,8 +14,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
         while (_) try {
-            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [0, t.value];
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
                 case 0: case 1: t = op; break;
                 case 4: _.label++; return { value: op[1], done: false };
@@ -98,8 +98,8 @@ exports.setHasVerificationBeenAttempted = function (hasVerificationBeenAttempted
 // Async Redux Thunk actions:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 var generateAuthActions = function (config) {
-    var authUrl = config.authUrl, storage = config.storage, userAttributes = config.userAttributes, userRegistrationAttributes = config.userRegistrationAttributes;
-    var Storage = Boolean(storage.flushGetRequests) ? storage : AsyncLocalStorage_1.default;
+    var authUrl = config.authUrl, userAttributes = config.userAttributes, userRegistrationAttributes = config.userRegistrationAttributes;
+    var Storage = AsyncLocalStorage_1.default;
     var registerUser = function (userRegistrationDetails) { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
             var email, password, passwordConfirmation, data, response, userAttributesToSave, error_1;
@@ -147,6 +147,7 @@ var generateAuthActions = function (config) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        auth_1.setAuthHeaders(verificationParams);
                         dispatch(exports.verifyTokenRequestSent());
                         _a.label = 1;
                     case 1:
@@ -154,11 +155,13 @@ var generateAuthActions = function (config) {
                         return [4 /*yield*/, axios_1.default({
                                 method: 'GET',
                                 url: authUrl + "/validate_token",
-                                params: verificationParams,
                             })];
                     case 2:
                         response = _a.sent();
                         auth_1.setAuthHeaders(response.headers);
+                        // PROBLEM: access-token missing in subsequent request even though setAuthHeaders() here
+                        // access-token may be empty after refresh, and also empty in response.headers here
+                        // SOLUTION: setAuthHeaders() before verifyToken() in addition to after
                         auth_1.persistAuthHeadersInDeviceStorage(Storage, response.headers);
                         userAttributesToSave = auth_1.getUserAttributesFromResponse(userAttributes, response);
                         dispatch(exports.verifyTokenRequestSucceeded(userAttributesToSave));
@@ -172,24 +175,21 @@ var generateAuthActions = function (config) {
             });
         });
     }; };
+    // allow any params in userSignInCredentials in addition to email and password
     var signInUser = function (userSignInCredentials) { return function (dispatch) {
         return __awaiter(this, void 0, void 0, function () {
-            var email, password, response, userAttributesToSave, error_3;
+            var response, userAttributesToSave, error_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         dispatch(exports.signInRequestSent());
-                        email = userSignInCredentials.email, password = userSignInCredentials.password;
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
                         return [4 /*yield*/, axios_1.default({
                                 method: 'POST',
                                 url: authUrl + "/sign_in",
-                                data: {
-                                    email: email,
-                                    password: password,
-                                },
+                                data: userSignInCredentials,
                             })];
                     case 2:
                         response = _a.sent();
@@ -250,7 +250,7 @@ var generateAuthActions = function (config) {
         });
     }; };
     var verifyCredentials = function (store) { return __awaiter(_this, void 0, void 0, function () {
-        var verificationParams, _a, _b;
+        var verificationParams, _a, _b, key, val, newVal;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0: return [4 /*yield*/, Storage.getItem('access-token')];
@@ -268,6 +268,18 @@ var generateAuthActions = function (config) {
                 case 4:
                     verificationParams = (_a.uid = (_c.sent()),
                         _a);
+                    // because of the shit (AsyncLocalStorage in react-native)
+                    for (key in verificationParams) {
+                        val = verificationParams[key];
+                        newVal = void 0;
+                        try {
+                            newVal = JSON.parse(val).rawData;
+                        }
+                        catch (e) {
+                            newVal = val;
+                        }
+                        verificationParams[key] = newVal;
+                    }
                     store.dispatch(verifyToken(verificationParams));
                     return [3 /*break*/, 6];
                 case 5:
