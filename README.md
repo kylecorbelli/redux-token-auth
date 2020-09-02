@@ -1,3 +1,8 @@
+# *********************** NOTICE ****************************
+# Hi there! I’ve obviously long neglected this library. If anyone would like to take it over I’d be happy to transfer it.
+# ***********************************************************
+
+
 # Redux Token Auth
 
 [![CircleCI](https://circleci.com/gh/kylecorbelli/redux-token-auth.svg?style=shield)](https://circleci.com/gh/kylecorbelli/redux-token-auth)
